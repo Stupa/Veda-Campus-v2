@@ -1,0 +1,143 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../components/vc-section/vc-header.html">
+<link rel="import" href="../components/vc-section/vc-body.html">
+<link rel="import" href="../components/vc-card-simple/vc-card-simple.html">
+
+<dom-module id="vc-staff">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-alignment">
+       :host {
+        display: block;
+        --vc-card-simple-background: url("../images/staff_background.jpeg");
+        --vc-card-simple-background-color: var(--secondary-color-dark);
+        --vc-body-p-color: var(--primary-color-text);
+        --vc-body-h-color: var(--primary-color-dark);
+        /*--vc-body-a-color: var(--secondary-color-dark);*/
+        --vc-header-p-color: var(--color-neutral-text-dark);
+        --vc-header-a-color: var(--secondary-color-dark);
+        --vc-header-main-bar-background-color: var(--secondary-color-dark);
+        --vc-card-simple-max-width: 1344px;
+        --vc-staff-responsive-width: 251px;
+        --vc-card-simple-responsive-width: var(--vc-staff-responsive-width);
+      }
+      
+      .container {
+        height: 100%;
+      }
+    </style>
+
+    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('staff')}}">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" endcap nocontent>
+      </vc-header>
+    </template>
+    <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('staff')}}">
+      <vc-card-simple params="[[vccardsimpleparams]]" paramssmaller="[[vccardsimpleparamssmaller]]">
+        <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" margin roundimage></vc-body>
+      </vc-card-simple>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-staff',
+      properties: {
+        types: {
+          type: Array,
+          value: []
+        },
+        headers: {
+          type: Array,
+          value: []
+        },
+        bodies: {
+          type: Array,
+          value: []
+        },
+        vccardsimpleparams: {
+          type: Array,
+          value: []
+        },
+        vccardsimpleparamssmaller: {
+          type: Array,
+          value: []
+        }
+      },
+
+      _headersIsDesc: function (type) {
+        return function (header) {
+          if (header.type == type) return true;
+          if (header.type != type) return false;
+        };
+      },
+
+      _bodiesIsDesc: function (type) {
+        return function (body) {
+          if (body.type == type) return true;
+          if (body.type != type) return false;
+        };
+      },
+
+      windowResize: function () {
+        var that = this;
+      },
+
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.types = [
+          { lbl: "staff" }
+        ]
+        that.headers = [
+          {
+            type: this.types[0].lbl, lbl: "Qui sommes-nous ?", desc: [
+              { txt: "La " },
+              { link: { href: "http://www.suddeseine.fr/", txt: "Communauté d'Agglomération Sud-De-Seine" } },
+              { txt: " et la " },
+              { link: { href: "http://bge.asso.fr/", txt: "BGE" } },
+              { txt: " nous ont apporté leur concours à travers un accompagnement à la création d'entreprise, déclenchant ainsi le passage du projet en phase active. Dès le début, un petit groupe s'est peu à peu formé autour du projet. Certains aident, participent ou s'engagent déjà pour faire partie de l'équipe qui gérera le domaine. Leurs profils rejoindront cette page." }
+            ]
+          }
+        ];
+        that.bodies = [
+          {
+            type: this.types[0].lbl, lbl: "Jorge Mendes", src: this.resolveUrl("../images/staff_00.png"), desc: [
+              { txt: "30 ans comme responsable d’Efficacité Commerciale et d’Entreprise, Coach en Management, Motivation, Gestion de Stress. Organisateur de centaines de stages, séminaires en France et à l'étranger. Pratiquant de Tai Chi Chuan et de Gunshu. J’ai ainsi pu visiter et travailler dans des dizaines de centres de formation et de séminaires, rarement adaptés (souvent des hôtels). J'ai pris la décision, à l’été 2014, d’aller plus loin et développer moi-même un tel Centre. Dédié aux stages de Management, Bien Être, Médecines Douces ou Développement Personnel, le domaine devrait se situer dans une zone préservée, en pleine nature, au calme et suffisamment isolé pour préserver la quiétude des stagiaires." }
+            ]
+          },
+        ];
+        that.vccardsimpleparams = [
+          { name: '--vc-card-simple-margin', largeValue: '2em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding', largeValue: '0em', smallValue: '0em' },
+        ];
+        that.vccardsimpleparamssmaller = [
+          { name: '--vc-card-simple-margin', largeValue: '1em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding', largeValue: '0em', smallValue: '0em' },
+        ];
+      }
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,179 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../vc-icons.html">
+
+<dom-module id="vc-news-header-arrow">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      width: 32px;
+    }
+    
+    p {
+      color: var(--color-neutral-text-dark);
+      font-weight: 600;
+      font-size: 0.8em;
+      text-align: justify;
+    }
+    
+    paper-icon-button {
+      /*--paper-icon-button-ink-color: var(--default-border-color);*/
+      color: var(--primary-color-dark);
+      width: 32px;
+      height: 32px;
+    }
+    
+    .mainDiv {
+      position: relative;
+    }
+    
+    #arrow {
+      position: absolute;
+    }
+    
+    .titleText {
+      height: 0.75em;
+      width: 1em;
+      color: var(--primary-color-text);
+      /*background-color: var(--primary-color-dark);*/
+    }
+  </style>
+  <template>
+
+    <div class="mainDiv">
+      <template is="dom-if" if="{{showheader}}">
+        <div id="mainBar" class="layout vertical center-justified">
+          <div class="layout horizontal start-justified titleText bk-default p-0-5">
+          </div>
+        </div>
+      </template>
+
+      <div id="arrow">
+        <paper-icon-button class="p-0-25" icon="[[src]]"></paper-icon-button>
+      </div>
+
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'vc-news-header-arrow',
+      properties: {
+        move: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+        src: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        showheader: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true
+        },
+        tapfunct: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        index: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          observer: "_show"
+        },
+        hideindex: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: -1
+        },
+        next: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        },
+        transformparamfrom: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        transformparamto: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        width: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true
+        }
+      },
+
+      listeners: {
+        'arrow.tap': 'arrowTap'
+      },
+
+      attached: function () {
+        var that = this;
+        that.windowResize();
+      },
+
+      windowResize: function () {
+        this.setClass();
+      },
+
+      setClass: function () {
+        var that = this;
+        h = 64;
+        that.$.arrow.style.top = h + "px";
+      },
+
+      arrowTap: function (e) {
+        var that = this;
+        that.transformparamfrom = that.width * that.index;
+        if (that.next) {
+          that.index++;
+        }
+        else {
+          that.index--;
+        }
+        that.transformparamto = that.width * that.index;
+        that.move = true;
+      },
+
+      _show: function () {
+        var that = this;
+        if (that.index == that.hideindex) {
+          that.$.arrow.style.visibility = "hidden";
+        }
+        else {
+          that.$.arrow.style.visibility = "visible";
+        }
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+      }
+
+    });
+  </script>
+</dom-module>

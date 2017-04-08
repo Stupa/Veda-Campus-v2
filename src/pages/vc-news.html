@@ -1,0 +1,198 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../components/vc-news/vc-news-main.html">
+
+
+<dom-module id="vc-news">
+  <style is="custom-style">
+     :host {
+      display: block;
+      --vc-news-body-p-color: var(--color-neutral-text-dark);
+      --vc-news-body-a-color: var(--primary-color-dark);
+    }
+  </style>
+
+  <template>
+
+    <vc-news-main types="[[types]]" headers="[[headers]]" bodies="[[bodies]]" pagewidth="[[pagewidth]]" narrow="[[narrow]]"></vc-news-main>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-news',
+      properties: {
+        types: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        headers: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        bodies: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        pagewidth: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        narrow: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        }
+      },
+
+      windowResize: function () {
+        var that = this;
+        /*that.updateStyles();*/
+      },
+
+      attached: function () {
+        var that = this;
+        that.types = [
+          { lbl: "1" },
+          { lbl: "2" },
+          { lbl: "3" },
+          { lbl: "4" },
+          { lbl: "5" },
+          { lbl: "6" },
+          { lbl: "7" },
+          { lbl: "8" },
+          { lbl: "9" },
+          { lbl: "10" },
+          { lbl: "11" },
+          { lbl: "12" },
+          { lbl: "13" },
+          { lbl: "14" },
+        ]
+        that.headers = [
+          { type: this.types[0] },
+          { type: this.types[1] },
+          { type: this.types[2] },
+          { type: this.types[3] },
+          { type: this.types[4] },
+          { type: this.types[5] },
+          { type: this.types[6] },
+          { type: this.types[7] },
+          { type: this.types[8] },
+          { type: this.types[9] },
+          { type: this.types[10] },
+          { type: this.types[11] },
+          { type: this.types[12] },
+          { type: this.types[13] },
+        ];
+        that.bodies = [
+          {
+            type: this.types[0], lbl: "Bonne année 2016 !", src: this.resolveUrl("../images/news0002.png"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[1], lbl: "Business plan finalisé", src: this.resolveUrl("../images/news0001.png"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[2], lbl: "Sud-De-Seine et la BGE supportent Veda Campus", src: this.resolveUrl("../images/news0004.jpg"), desc: [
+              { txt: "Février 2015, la " },
+              { link: { href: "http://www.suddeseine.fr/", txt: "Communauté d'Agglomération Sud-De-Seine" } },
+              { txt: " et la " },
+              { link: { href: "http://bge.asso.fr/", txt: "BGE" } },
+              { txt: " nous ont apporté leur concours à travers un accompagnement à la création d'entreprise, déclenchant ainsi le passage du projet en phase active." }
+            ]
+          },
+          {
+            type: this.types[3], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[4], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[5], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[6], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[7], lbl: "Bonne année 2016 !", src: this.resolveUrl("../images/news0002.png"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[8], lbl: "Business plan finalisé", src: this.resolveUrl("../images/news0001.png"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[9], lbl: "Sud-De-Seine et la BGE supportent Veda Campus", src: this.resolveUrl("../images/news0004.jpg"), desc: [
+              { txt: "Février 2015, la Communauté d'Agglomération Sud-De-Seine et la BGE nous ont apporté leur concours à travers un accompagnement à la création d'entreprise, déclenchant ainsi le passage du projet en phase active." }
+            ]
+          },
+          {
+            type: this.types[10], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[11], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[12], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[13], lbl: "02/02/2015 Lancement du site Internet Veda Campus", src: this.resolveUrl("../images/news0000.jpg"), desc: [
+              { txt: "" }
+            ]
+          },
+        ];
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+      },
+
+    });
+  </script>
+</dom-module>

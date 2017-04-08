@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../styles/shared-styles.html">
+
+<dom-module id="vc-query">
+  <template>
+
+    <iron-media-query query="[[responsivewidth]]" query-matches="{{largescreen}}"></iron-media-query>
+
+  </template>
+
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'vc-query',
+    properties: {
+      largescreen: {
+        type: Boolean,
+        notify: true,
+        reflectToAttribute: true,
+      },
+      responsivewidth: {
+        type: String,
+        notify: true,
+        reflectToAttribute: true,
+      },
+      responsivewidthparam: {
+        type: String,
+        notify: true,
+        reflectToAttribute: true,
+        value: '--vc-app-drawer-layout-responsive-width'
+      },
+      narrow: {
+        type: Boolean,
+        notify: true,
+        reflectToAttribute: true,
+        value: false,
+        observer: "_switchNarrow"
+      }
+    },
+
+
+    _switchNarrow: function () {
+      var that = this;
+      var w = 0;
+      w = Number(that.getComputedStyleValue(that.responsivewidthparam).replace('px', ''));
+      if (!that.narrow) {
+        w = w + Number(that.getComputedStyleValue('--vc-app-drawer-width').replace('px', ''));
+      }
+      that.responsivewidth = "(max-width: " + w + "px)"
+    },
+
+    ready: function () {
+      var that = this;
+      that._switchNarrow();
+    }
+
+  });
+
+</script>

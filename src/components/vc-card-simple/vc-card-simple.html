@@ -1,0 +1,158 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../components/vc-query/vc-query.html">
+
+
+<dom-module id="vc-card-simple">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      max-width: var(--vc-card-simple-max-width, "100%");
+      border-radius: 5px;
+    }
+    
+    div.main {
+      padding: var(--vc-card-simple-padding, '');
+      padding-right: var(--vc-card-simple-padding-right, '');
+      padding-top: var(--vc-card-simple-padding-top, '');
+      padding-bottom: var(--vc-card-simple-padding-bottom, '');
+      background-color: var(--vc-card-simple-background-color-rgba, --transparent);
+    }
+    
+    div.image {
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: auto 100%;
+      display: "block";
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      margin: var(--vc-card-simple-margin, 0);
+      margin-top: 0;
+      background: var(--vc-card-simple-background, "");
+      border: var(--vc-card-simple-border, 0);
+      opacity: 1;
+    }
+  </style>
+  <template>
+
+    <div id="imageContainer" class="card image p-0">
+      <div id="mainContainer" class="card layout vertical main m-0">
+        <content></content>
+      </div>
+    </div>
+
+    <vc-query largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam='--vc-card-simple-responsive-width' largescreen="{{largescreensmaller}}"></vc-query>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-card-simple',
+      properties: {
+        params: {
+          type: Array,
+          value: [],
+          observer: '_setInitParams'
+        },
+        paramssmaller: {
+          type: Array,
+          value: [],
+          observer: '_setInitParams'
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        },
+        largescreensmaller: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChangedSmaller'
+        },
+      },
+
+      windowResize: function () {
+        var that = this;
+      },
+
+      /*
+            getComputedStyleNumber: function (item, prop) {
+              return Number(window.getComputedStyle(item, null).getPropertyValue(prop).replace('px', ''));
+            },
+      */
+
+      hexToRgbA: function (hex) {
+        var c;
+        if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+          c = hex.substring(1).split('');
+          if (c.length == 3) {
+            c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+          }
+          c = '0x' + c.join('');
+          return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',0.90)';
+        }
+        throw new Error('Bad Hex');
+      },
+
+      _largeScreenChangedSmaller: function (newValue) {
+        var that = this;
+        that._largeScreenChangedParams(newValue, that.paramssmaller);
+        if (!newValue && !that.largescreen) {
+          that._largeScreenChangedParams(that.largescreen, that.params);
+        }
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        that._largeScreenChangedParams(newValue, that.params);
+      },
+
+      _largeScreenChangedParams: function (newValue, params) {
+        var that = this;
+        for (let param of params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.updateStyles();
+      },
+
+      attached: function () {
+        var that = this;
+        var color = '';
+        color = that.getComputedStyleValue('--vc-card-simple-background-color');
+        if (color) {
+          that.customStyle['--vc-card-simple-background-color-rgba'] = that.hexToRgbA(color);
+        }
+        that.updateStyles();
+      },
+
+      _setInitParams: function () {
+        var that = this;
+        if (that.paramssmaller && that.params) {
+          if (that.largescreensmaller) {
+            that._largeScreenChangedParams(that.largescreensmaller, that.paramssmaller);
+          }
+          else {
+            that._largeScreenChangedParams(that.largescreen, that.params);
+          }
+        }
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+      },
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,42 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+
+<dom-module id="vc-menu-item-page">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      height: auto;
+      width: auto;
+    }
+  </style>
+
+  <template>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-menu-item-page',
+      properties: {
+        name: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ''
+        },
+        computedname: {
+          type: String,
+          value: ''
+        }
+      },
+      ready: function () {
+        this.computedname = "vc-" + this.name;
+        var dynamicEl = document.createElement(this.computedname);
+        dynamicEl.setAttribute("name", this.name);
+        /*dynamicEl.name = this.name;*/
+        /*dynamicEl.textContent = this.name;*/
+        /*document.body.appendChild(dynamicEl);*/
+        this.appendChild(dynamicEl);
+      }
+    });
+  </script>
+</dom-module>

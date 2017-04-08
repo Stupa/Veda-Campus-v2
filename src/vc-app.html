@@ -1,0 +1,220 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="vc-icons.html">
+<link rel="import" href="styles/shared-styles.html">
+<link rel="import" href="components/vc-menu-item/vc-menu-item-button.html">
+
+
+
+
+<dom-module id="vc-app">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block;
+      }
+      
+      a {
+        padding: 0.5em 1em 0.5em 3em;
+        display: inline-block;
+        width: 100%;
+        vertical-align: middle;
+        position: relative;
+        cursor: pointer;
+        text-decoration: none;
+        box-sizing: border-box;
+      }
+      
+      iron-icon {
+        position: absolute;
+        top: 0.5em;
+      }
+      
+      .left iron-icon {
+        left: 1em;
+      }
+      
+      .right iron-icon {
+        right: 0.5em;
+      }
+      
+      .right a {
+        padding: 0.5em 2.5em 0.5em 1em;
+      }
+      
+      #logo {
+        width: auto;
+        height: auto;
+      }
+      
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: transparent;
+        }
+      }
+    </style>
+
+
+
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout id="appdrawerlayout" fullbleed class="transparentToolbar">
+      <!-- Drawer content -->
+      <app-drawer id="drawer" on-opened-changed="windowResize">
+        <app-toolbar class="transparentToolbar"></app-toolbar>
+        <!--<iron-selector class="left-menu p-t-1 transparentToolbar drawer-list" selected="[[page]]" attr-for-selected="name" role="navigation">-->
+
+        <iron-selector class="left-menu p-t-1 transparentToolbar" selected="[[page]]" attr-for-selected="name" role="navigation">
+          <template is="dom-repeat" items="{{pages}}">
+            <vc-menu-item-button name="[[item.name]]" icon="[[item.icon]]" desc="[[item.desc]]" jump="[[item.jump]]" selectedpage="[[page]]">
+            </vc-menu-item-button>
+          </template>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout id="pages" has-scrolling-region>
+
+        <!--<app-header condenses reveals effects="waterfall" class="transparentToolbar">-->
+        <app-header class="transparentToolbar">
+
+
+          <app-toolbar class="transparentToolbar">
+            <paper-icon-button icon="vc-icons:menu" drawer-toggle></paper-icon-button>
+            <div main-title>
+              <iron-icon id="logo" src="images/vedalogo.png"></iron-icon>
+            </div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+          <vc-home name="home"></vc-home>
+          <vc-news name="news" pagewidth="[[pagewidth]]" narrow="[[narrow]]"></vc-news>
+          <vc-staff name="staff"></vc-staff>
+          <vc-contact name="contact"></vc-contact>
+          <!--<vc-auth name="auth"></vc-auth>
+          <vc-user name="user"></vc-user>-->
+          <vc-view404 name="view404"></vc-view404>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-app',
+
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged',
+        },
+        pages: {
+          type: Array,
+          value: []
+        },
+        pagewidth: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        /*responsivewidth: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },*/
+        narrow: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        }
+
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page)',
+      ],
+
+      _routePageChanged: function (page) {
+        this.page = page || 'home';
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      },
+
+      _pageChanged: function (page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('pages/vc-' + page + '.html');
+        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+      },
+
+      _showPage404: function () {
+        this.page = 'view404';
+      },
+
+      windowResize: function () {
+        var that = this;
+        that.pagewidth = Number(window.getComputedStyle(that.$.pages, null).getPropertyValue('width').replace('px', ''));
+        that.narrow = that.$.appdrawerlayout.narrow;
+        /*that.menuwidth = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
+        /*that.pagewidththreshold = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
+        /*that.responsivewidth = Number(that.$.appdrawerlayout.responsiveWidth.replace('px', ''));*/
+      },
+
+      attached: function () {
+        var that = this;
+        that.$.appdrawerlayout.responsiveWidth = that.getComputedStyleValue('--vc-app-drawer-layout-responsive-width');
+        that.windowResize();
+      },
+
+      ready: function () {
+        var that = this;
+
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+
+        that.pages = [
+          { name: "home", icon: "vc-icons:home", desc: "Accueil", jump: false },
+          { name: "news", icon: "vc-icons:announcement", desc: "News", jump: false },
+          { name: "staff", icon: "vc-icons:person", desc: "Staff", jump: false },
+          { name: "contact", icon: "vc-icons:email", desc: "Contact", jump: false }
+          /*{ name: "auth", icon: "vc-icons:input", desc: "Connexion", jump: true },
+          { name: "user", icon: "vc-icons:person", desc: "Nouveau compte", jump: false }*/
+        ];
+      }
+
+    });
+  </script>
+</dom-module>

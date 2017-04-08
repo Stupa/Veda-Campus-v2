@@ -1,0 +1,147 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="../vc-query/vc-query.html">
+
+
+
+<dom-module id="vc-home-map-image-small">
+  <style include="shared-styles iron-flex iron-positioning iron-flex-alignment" is="custom-style">
+     :host {
+      display: flex;
+      position: absolute;
+      max-width: 9.66%;
+    }
+    
+    .smallImage {
+      display: block;
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+    
+    .bigShowColor iron-icon {
+      --iron-icon-fill-color: var(--primary-color-text);
+    }
+    
+    .bigHideColor iron-icon {
+      --iron-icon-fill-color: var(--secondary-color);
+    }
+    
+    iron-icon {
+      position: absolute;
+      top: -0.2em;
+      left: -0.2em;
+      height: 2em;
+      width: 2em;
+      --iron-icon-fill-color: var(--secondary-color);
+      --iron-icon-stroke-color: var(--primary-color-dark);
+      z-index: 1;
+    }
+    
+    img,
+    iron-image {
+      display: block;
+      width: 100%;
+      --iron-image-width: 100%;
+    }
+  </style>
+  <template>
+
+    <div id="mainSmall" class="position" on-mouseover="_onHovered" on-mouseout="_onUnhovered">
+      <iron-icon id="iconSmall" class$="{{iconSmallClass}}" icon="{{icon}}"></iron-icon>
+      <iron-image id="imageSmall" class$="{{imageSmallClass}}" src="[[srcsmall]]"></iron-image>
+    </div>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'vc-home-map-image-small',
+      properties: {
+        index: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        currindex: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        src: {
+          type: String,
+          notify: true,
+        },
+        srcsmall: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        topsmall: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        leftsmall: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        icon: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        hovered: false,
+        imageSmallClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "card m-0 smallImage bc-blue shadow bp-0-2"
+        },
+        iconSmallClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "bigHideColor"
+        },
+        bigpos: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "center-justified",
+        }
+      },
+
+      _onHovered: function (event) {
+        var that = this;
+        that.currindex = that.index;
+        that.hovered = true;
+        that.imageSmallClass = that.imageSmallClass.replace("bc-blue", "bc-white");
+        that.$.iconSmall.style.fill = that.getComputedStyleValue('--primary-color-text');
+      },
+      _onUnhovered: function (event) {
+        var that = this;
+        that.currindex = -1;
+        that.hovered = false;
+        that.imageSmallClass = that.imageSmallClass.replace("bc-white", "bc-blue");
+        that.$.iconSmall.style.fill = that.getComputedStyleValue('--secondary-color');
+      },
+
+      ready: function () {
+        var that = this;
+        that.srcsmall = that.src + "_small.jpeg";
+        that.style.top = that.topsmall;
+        that.style.left = that.leftsmall;
+      }
+
+
+    });
+  </script>
+</dom-module>

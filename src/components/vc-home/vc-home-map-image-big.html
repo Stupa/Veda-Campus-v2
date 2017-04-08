@@ -1,0 +1,183 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="../../components/vc-query/vc-query.html">
+
+<dom-module id="vc-home-map-image-big">
+  <style include="shared-styles iron-flex iron-positioning iron-flex-alignment" is="custom-style">
+     :host {
+      display: flex;
+      position: absolute;
+      z-index: 2;
+      min-width: 100%;
+      height: 40%;
+      --vc-home-map-image-responsive-width: 1024px;
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+    
+    .relative {
+      position: relative;
+      height: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    
+    .textBig {
+      position: absolute;
+      top: -0.5em;
+      width: 100%;
+    }
+    
+    h6 {
+      color: var(--primary-color-text);
+      text-align: center;
+      max-width: 90%;
+      padding: 0.5em;
+      font-style: italic;
+      font-size: var(--vc-home-map-image-font-size);
+    }
+    
+    img,
+    iron-image {
+      display: block;
+      max-width: 100%;
+      height: 100%;
+      --iron-image-max-width: 100%;
+      --iron-image-height: 100%;
+    }
+  </style>
+
+  <template>
+
+    <div id="mainBig" class="card transparentToolbar horizontal layout center-justified containerPercent">
+      <div class="relative card bp-0-2 bc-white shadow">
+        <iron-image src="[[srcbig]]"></iron-image>
+        <div class="textBig">
+          <div class="card horizontal transparentToolbar layout center-justified containerPercent">
+            <h6 class="darkToolbar">[[desc]]</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <vc-query responsivewidthparam='--vc-home-map-image-responsive-width' largescreen="{{largescreen}}"></vc-query>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-home-map-image-big',
+      properties: {
+        index: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        currindex: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0,
+          observer: '_switchVisibility'
+        },
+        src: {
+          type: String,
+          notify: true
+        },
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        topbig: {
+          type: String,
+          notify: true,
+          observer: '_topbigChanged'
+        },
+        bottombig: {
+          type: String,
+          notify: true,
+          observer: '_bottombigChanged'
+        },
+        srcbig: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        hovered: {
+          value: false,
+        },
+        params: {
+          type: Array,
+          value: []
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        }
+      },
+
+      _switchVisibility: function () {
+        var that = this;
+        if (that.currindex == that.index) {
+          that._onHovered();
+        }
+        else {
+          that._onUnhovered();
+        }
+      },
+
+      _onHovered: function () {
+        var that = this;
+        that.style.visibility = "visible";
+        that.style.display = "block";
+      },
+
+      _onUnhovered: function () {
+        var that = this;
+        that.style.visibility = "hidden";
+        that.style.display = "none";
+      },
+
+      _bottombigChanged: function () {
+        var that = this;
+        that.style.bottom = that.bottombig;
+      },
+
+      _topbigChanged: function () {
+        var that = this;
+        that.style.top = that.topbig;
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        for (let param of that.params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.updateStyles();
+      },
+
+      attached: function () {
+        var that = this;
+        that._largeScreenChanged(that.largescreen);
+      },
+
+      ready: function () {
+        var that = this;
+        that.srcbig = that.src + "_big.jpeg";
+        that.params = [
+          { name: '--vc-home-map-image-font-size', largeValue: '0.9em', smallValue: '0.7em' }
+        ];
+      },
+
+    });
+  </script>
+</dom-module>

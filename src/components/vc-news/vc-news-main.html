@@ -1,0 +1,241 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="vc-news-header-arrow.html">
+<link rel="import" href="vc-news-animation-container.html">
+<link rel="import" href="vc-news-list.html">
+<link rel="import" href="../vc-query/vc-query.html">
+
+<dom-module id="vc-news-main">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      --vc-news-responsive-width: 416px;
+    }
+    
+    .containerPercent {
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
+
+  <template>
+
+    <div class="transparentToolbar horizontal layout containerPercent">
+
+      <vc-news-header-arrow class="flex-none" id="previous" src="vc-icons2:chevron-circle-left-o" showheader index="{{index}}"
+        hideindex="0" width="[[width]]" move="{{move}}" transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}"></vc-news-header-arrow>
+      <div class="transparentToolbar horizontal layout left-justified containerPercent">
+        <vc-news-animation-container transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}" move="{{move}}">
+          <vc-news-list types="[[types]]" headers="[[headers]]" bodies="[[bodies]]" width="[[width]]"></vc-news-list>
+        </vc-news-animation-container>
+      </div>
+      <vc-news-header-arrow class="flex-none" id="next" src="vc-icons2:chevron-circle-right-o" next="true" index="{{index}}" hideindex="[[lastindex]]"
+        width="[[width]]" move="{{move}}" transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}"></vc-news-header-arrow>
+
+    </div>
+
+    <vc-query responsivewidthparam='--vc-news-responsive-width' largescreen="{{largescreen}}" narrow="[[narrow]]"></vc-query>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-news-main',
+      properties: {
+        pagewidth: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        width: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          observer: "_setClass"
+        },
+        newsperpage: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        oldnewsperpage: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        types: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        headers: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        bodies: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true,
+          observer: "_bodiesChanged"
+        },
+        index: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: -1
+        },
+        lastindex: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: -1
+        },
+        transformparamfrom: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        transformparamto: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: 0
+        },
+        move: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true
+        },
+        params: {
+          type: Array,
+          value: []
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        },
+        narrow: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        }
+      },
+
+      _bodiesChanged: function (newValue) {
+        var that = this;
+        that.lastindex = Math.ceil(that.bodies.length / that.newsperpage) - 1;
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        for (let param of that.params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.updateStyles();
+        that.windowResize();
+      },
+
+      attached: function () {
+        var that = this;
+        that.index = 0;
+        that._largeScreenChanged(that.largescreen);
+        that.windowResize();
+      },
+
+      windowResize: function () {
+        var that = this;
+        var wNews = 0;
+        var wNew = 0;
+        var w = 0;
+        var previousWidth = 0;
+        var nextWidth = 0;
+
+        previousWidth = Number(window.getComputedStyle(that.$.previous, null).getPropertyValue('width').replace('px', ''));
+        nextWidth = Number(window.getComputedStyle(that.$.next, null).getPropertyValue('width').replace('px', ''));
+        w = that.pagewidth - (previousWidth + nextWidth);
+        wNew = Number(that.getComputedStyleValue('--vc-news-header-min-width').replace('px', ''));
+
+        if (isNaN(wNew)) {
+          wNew = w;
+        }
+        if (w >= wNew) {
+          if (wNew > 0) {
+            if (that.oldnewsperpage == 0) {
+              that.oldnewsperpage = Math.floor(w / wNew);
+              if (that.oldnewsperpage == 0) {
+                that.oldnewsperpage = 1;
+              }
+            }
+            else {
+              that.oldnewsperpage = that.newsperpage;
+            }
+            if (wNew > 0) {
+              if (that.newsperpage == 0) {
+                that.newsperpage = 1;
+              }
+              else {
+                that.newsperpage = Math.floor(w / wNew);
+              }
+              wNews = that.newsperpage * wNew;
+            }
+            if (wNews > 0) {
+              that.lastindex = Math.ceil(that.bodies.length / that.newsperpage) - 1;
+              that.width = wNews;
+            }
+          }
+        }
+      },
+
+      _setClass: function (newValue, oldValue) {
+        var that = this;
+        var wNew = 0;
+        var wNews = 0;
+        var newIndex = 0;
+
+        /*wNew = Number(that.getComputedStyleValue('--truc-truc')) + Number(that.getComputedStyleValue('--vc-news-list-margin-left')) + 2 * Number(that.getComputedStyleValue('--news-content-border'));*/
+        newIndex = Math.floor(that.index * that.oldnewsperpage / that.newsperpage);
+        that.transformparamto = newValue * newIndex;
+        if (!((that.oldnewsperpage == that.newsperpage) && (that.index == newIndex))) {
+          that.transformparamfrom = oldValue * that.index;
+        }
+        else {
+          that.transformparamfrom = that.transformparamto;
+        }
+        that.index = newIndex;
+        that.move = true;
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.params = [
+          { name: '--vc-news-header-min-width', largeValue: '352px', smallValue: '100%' },
+          { name: '--vc-news-list-margin-left', largeValue: '32px', smallValue: '0' }
+        ];
+      },
+
+    });
+  </script>
+</dom-module>

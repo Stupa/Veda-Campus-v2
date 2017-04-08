@@ -1,0 +1,348 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="theme.html">
+
+<!-- shared styles for all views -->
+<dom-module id="shared-styles-colors">
+  <template>
+    <style include="theme">
+      paper-button[colored],
+      .paper-toolbar,
+      paper-toolbar.paper-toolbar-0,
+      .split:before,
+      paper-checkbox.paper-checkbox-0 #checkbox.checked.paper-checkbox {
+        background-color: var(--primary-color);
+        color: var(--color-neutral-light);
+      }
+      
+      vc-list-menu li a:hover,
+      code,
+      table>tr:hover {
+        background-color: var(--color-neutral-dark);
+      }
+      
+      vc-list-menu li ul {
+        background-color: var(--color-neutral-dark);
+      }
+      
+      paper-checkbox.paper-checkbox-0 #checkbox.checked.paper-checkbox {
+        border-color: var(--primary-color);
+      }
+      
+      paper-checkbox.paper-checkbox-0 #ink[checked].paper-checkbox {
+        color: var(--primary-color);
+      }
+      
+      .vc-drawer-list iron-icon,
+      .main {
+        color: var(--color-neutral-text-dark);
+      }
+      
+      a {
+        color: var(--primary-color-dark);
+      }
+      /* Custom Classes */
+      
+      .c-p-highlight {
+        background-color: var(--primary-color-highlight);
+      }
+      
+      .c-p-light {
+        background-color: var(--primary-color-light);
+      }
+      
+      .c-p {
+        background-color: var(--primary-color);
+        color: var(--primary-color-text);
+      }
+      
+      .c-p-dark {
+        background-color: var(--primary-color-dark);
+        color: var(--primary-color-text);
+      }
+      
+      .c-n-light {
+        background-color: var(--color-neutral-light);
+      }
+      
+      .c-n {
+        background-color: var(--color-neutral);
+      }
+      
+      .c-n-dark {
+        background-color: var(--color-neutral-dark);
+      }
+      
+      .c-accent {
+        background-color: var(--accent-color) !important;
+      }
+      
+      .c-text-bg {
+        background-color: var(--color-neutral-text-bg);
+      }
+      
+      .c-text,
+      .c-text a {
+        color: var(--color-neutral-text);
+      }
+      
+      .c-text-dark,
+      .c-text-dark a {
+        color: var(--color-neutral-text-dark);
+      }
+      
+      .c-text-light,
+      .c-text-light a {
+        color: var(--color-neutral-text-light);
+      }
+      
+      .c-text-primary-light,
+      .c-text-primary-light a {
+        color: var(--primary-color-light);
+      }
+      
+      .c-b-light {
+        border: 1px solid var(--color-neutral-light);
+      }
+      
+      .c-b-t-light {
+        border-top: 1px solid var(--color-neutral-light);
+      }
+      
+      .c-b-r-light {
+        border-right: 1px solid var(--color-neutral-light);
+      }
+      
+      .c-b-b-light {
+        border-bottom: 1px solid var(--color-neutral-light);
+      }
+      
+      .c-b-l-light {
+        border-left: 1px solid var(--color-neutral-light);
+      }
+      
+      .c-b {
+        border: 1px solid var(--color-neutral);
+      }
+      
+      .c-b-t {
+        border-top: 1px solid var(--color-neutral);
+      }
+      
+      .c-b-r {
+        border-right: 1px solid var(--color-neutral);
+      }
+      
+      .c-b-b {
+        border-bottom: 1px solid var(--color-neutral);
+      }
+      
+      .c-b-l {
+        border-left: 1px solid var(--color-neutral);
+      }
+      
+      .c-b-dark {
+        border: 1px solid var(--color-neutral-dark);
+      }
+      
+      .c-b-t-dark {
+        border-top: 1px solid var(--color-neutral-dark);
+      }
+      
+      .c-b-r-dark {
+        border-right: 1px solid var(--color-neutral-dark);
+      }
+      
+      .c-b-b-dark {
+        border-bottom: 1px solid var(--color-neutral-dark);
+      }
+      
+      .c-b-l-dark {
+        border-left: 1px solid var(--color-neutral-dark);
+      }
+      
+      .shadow-top {
+        -webkit-box-shadow: 0px -4px 8px -4px var(--to-be-named-00);
+        -moz-box-shadow: 0px -4px 8px -4px var(--to-be-named-00);
+        box-shadow: 0px -4px 8px -4px var(--to-be-named-00);
+      }
+      
+      .shadow-right {
+        -webkit-box-shadow: 8px 0 8px -4px var(--to-be-named-00);
+        -moz-box-shadow: 8px 0 8px -4px var(--to-be-named-00);
+        box-shadow: 8px 0 8px -4px var(--to-be-named-00);
+      }
+      
+      .shadow-bottom {
+        -webkit-box-shadow: 0px -4px 8px -4px var(--to-be-named-00);
+        -moz-box-shadow: 0px -4px 8px -4px var(--to-be-named-00);
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+      }
+      
+      .shadow-left {
+        -webkit-box-shadow: -4px 0 4px -4px var(--to-be-named-00);
+        -moz-box-shadow: -4px 0 4px -4px var(--to-be-named-00);
+        box-shadow: -4px 0 4px -4px var(--to-be-named-00);
+      }
+      
+      .shadow {
+        -webkit-box-shadow: 0px 0px 6px 3px var(--to-be-named-00);
+        -moz-box-shadow: 0px 0px 6px 3px var(--to-be-named-00);
+        box-shadow: 0px 0px 6px 3px var(--to-be-named-00);
+      }
+      
+      .card {
+        color: #757575;
+        background-color: transparent;
+      }
+      
+      .noshadow {
+        box-shadow: none;
+      }
+      
+      .shadow {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      }
+      
+      .bc-default {
+        border-style: solid;
+        border-color: var(--default-border-color);
+        opacity: 1;
+      }
+      
+      .vc-contact-card-simple-image {
+        background: url("../images/contactmapnb.png");
+      }
+      
+      .vc-contact-card-simple-main {
+        background-color: var(--secondary-color-dark );
+      }
+      
+      .bc-white {
+        border-style: solid;
+        border-color: var(--primary-color-text);
+        opacity: 1;
+      }
+      
+      .bc-blue {
+        border-style: solid;
+        border-color: var(--secondary-color);
+        opacity: 1;
+      }
+      
+      .bc-blue-dark {
+        border-style: solid;
+        border-color: var(--secondary-color-dark);
+        opacity: 1;
+      }
+      
+      .bk-default {
+        background-color: var(--default-border-color);
+        opacity: 1;
+      }
+      
+      .bk-white {
+        background-color: var(--primary-color-text);
+        opacity: 1;
+      }
+      
+      .bk-blue {
+        background-color: var(--secondary-color);
+        opacity: 1;
+      }
+      
+      .bk-blue-dark {
+        background-color: var(--secondary-color-dark);
+        opacity: 1;
+      }
+      
+      .co-default {
+        color: var(--default-border-color);
+      }
+      
+      .co-white {
+        color: var(--primary-color-text);
+      }
+      
+      .co-blue {
+        color: var(--secondary-color);
+      }
+      
+      .co-blue-dark {
+        color: var(--secondary-color-dark);
+      }
+      
+      .circle {
+        color: #555;
+        background: #ddd;
+      }
+      
+      h1 {
+        margin: 16px 0;
+        color: #212121;
+        font-size: 22px;
+      }
+      
+      app-header {
+        color: #fff;
+        background-color: var(--main-background-color);
+      }
+      
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+      
+      .drawer-list a {
+        color: var(--accent-color);
+      }
+      
+      .drawer-list a.iron-selected {
+        color: black;
+      }
+      
+      .whiteToolbar {
+        background-color: rgba(255, 255, 255, 0.3);
+        /*opacity: 0.6;*/
+      }
+      
+      .whiteToolbarBody {
+        background-color: rgba(241, 237, 233, 0.9);
+        /*opacity: 0.6;*/
+      }
+      
+      .darkToolbar {
+        background-color: rgba(86, 69, 74, 0.8);
+        /*opacity: 0.6;*/
+      }
+      
+      .transparentToolbar {
+        background-color: transparent;
+      }
+      /*.iron-selected {
+        background: var(--main-background-color);
+        color: var( --secondary-color-dark);
+      }
+      .iron-selected a {
+      color: var( --secondary-color-dark);
+       }*/
+      
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: var(--primary-color-light);
+        }
+        /*--app-drawer-scrim-background: var(--primary-color-light);*/
+      }
+      
+      .littleCircle {
+        /* display: inline-block;*/
+        width: 12px;
+        height: 12px;
+        margin-left: 2px;
+        margin-right: 2px;
+        text-align: center;
+        border-radius: 50%;
+        font-size: 30px;
+        line-height: 64px;
+      }
+    </style>
+  </template>
+</dom-module>

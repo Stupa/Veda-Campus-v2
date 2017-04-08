@@ -1,0 +1,82 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="vc-desc">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      /*--vc-header-max-width: 1344px;
+      max-width: var(--vc-header-max-width);
+      --vc-header-responsive-width: 720px;*/
+    }
+    
+    p {
+      font-weight: 600;
+      font-size: 0.8em;
+      text-align: justify;
+    }
+    
+    p {
+      color: var(--vc-desc-p-color);
+    }
+    
+    a {
+      color: var(--vc-desc-a-color);
+    }
+    
+    a {
+      text-decoration: none;
+    }
+    
+    a:link {
+      color: var(--vc-desc-a-color);
+    }
+    /* visited link */
+    
+    a:visited {
+      color: var(--vc-desc-a-color);
+    }
+    /* mouse over link */
+    
+    a:hover {
+      /* color: var(--secondary-color-dark);*/
+      color: var(--vc-desc-a-color);
+    }
+    /* selected link */
+    
+    a:active {
+      color: var(--vc-desc-a-color);
+    }
+  </style>
+  <template>
+
+
+    <p>
+      <template is="dom-repeat" items="{{desc}}">
+        <template is="dom-if" if="{{item.txt}}">
+          [[item.txt]]
+        </template>
+        <template is="dom-if" if="{{item.link}}">
+          <a href="[[item.link.href]]">[[item.link.txt]]</a>
+        </template>
+      </template>
+    </p>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'vc-desc',
+      properties: {
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        }
+      }
+
+    });
+  </script>
+</dom-module>

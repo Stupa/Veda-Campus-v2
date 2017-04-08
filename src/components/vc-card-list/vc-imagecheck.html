@@ -1,0 +1,21 @@
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+
+
+
+<dom-module id="vc-imagecheck">
+  <style is="custom-style">
+    iron-image {
+            --iron-image-height: auto;
+            --iron-image-width: auto;
+        }
+  </style>
+  <template>
+    <iron-image id="icon" sizing="contain" image="{{image}}" src="[[image]]"></iron-image>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'vc-imagecheck'
+  });
+
+</script>

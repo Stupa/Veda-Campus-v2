@@ -1,0 +1,159 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../components/vc-section/vc-desc.html">
+
+
+<dom-module id="vc-news-body">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      --vc-desc-p-color: var(--vc-news-body-p-color);
+      --vc-desc-a-color: var(--vc-news-body-a-color);
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+    
+    .newsImage {
+      max-width: 100%;
+      height: auto;
+      margin: 0 0 10px 0;
+    }
+    
+    
+    h1 {
+      font-weight: bolder;
+    }
+    
+    img,
+    iron-image {
+      width: 100%;
+      max-width: 600px;
+      --iron-image-width: 100%;
+    }
+  </style>
+
+  <template>
+
+
+
+    <div id="mainDiv" class$="{{mainDivClass}}">
+
+      <template is="dom-if" if="{{!reverse}}">
+        <!--<template id="someDomIf" is="dom-if" if="{{src}}" restamp>-->
+        <template is="dom-if" if="{{src}}">
+          <div id="img" class="transparentToolbar newsImage">
+            <iron-image src="[[src]]"></iron-image>
+          </div>
+        </template>
+
+        <div class="p-1">
+          <template is="dom-if" if="{{lbl}}">
+            <h1 class="m-t-0">[[lbl]]</h1>
+          </template>
+          <template is="dom-if" if="{{desc}}">
+            <vc-desc desc="[[desc]]"></vc-desc>
+          </template>
+        </div>
+      </template>
+
+      <template is="dom-if" if="{{reverse}}">
+        <div>
+          <h1>[[lbl]]</h1>
+          <vc-desc desc="[[desc]]"></vc-desc>
+        </div>
+        <div class="m-l-2">
+        </div>
+        <template is="dom-if" if="{{src}}">
+          <div class="transparentToolbar">
+            <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
+          </div>
+        </template>
+      </template>
+
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-news-body',
+      properties: {
+        lbl: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        src: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        reverse: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        },
+        mainDivClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "containerPercent layout start-justified"
+        },
+
+        align: {
+          type: String,
+          notify: true,
+          value: "horizontal"
+        },
+      },
+
+      attached: function () {
+        var that = this;
+        that.windowResize();
+      },
+
+      windowResize: function () {
+        var that = this;
+        that.setClass();
+      },
+
+      _space: function () {
+        return this.src && (this.desc || this.lbl);
+      },
+
+      setClass: function () {
+        var that = this;
+        that.mainDivClass = "containerPercent layout" + " " + that.align;
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+      }
+
+
+    });
+  </script>
+</dom-module>

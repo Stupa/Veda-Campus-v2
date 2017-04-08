@@ -1,0 +1,278 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../vc-icons.html">
+<link rel="import" href="../../components/vc-query/vc-query.html">
+<link rel="import" href="vc-desc.html">
+
+<dom-module id="vc-body">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      --vc-body-responsive-width: 720px;
+      --vc-body-responsive-icon-width: 251px;
+      --vc-desc-p-color: var(--vc-body-p-color);
+      --vc-desc-a-color: var(--vc-body-a-color);
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+    
+    h7,
+    h1 {
+      font-weight: bolder;
+      color: var(--vc-body-h-color);
+    }
+    
+    iron-icon {
+      --iron-icon-fill-color: var(--secondary-color-dark);
+      --iron-icon-stroke-color: rgba(0, 0, 0, 1);
+      --iron-icon-height: var(--vc-body-iron-icon-size);
+      --iron-icon-width: var(--vc-body-iron-icon-size);
+      -webkit-filter: drop-shadow( 1px 1px 2px rgba(0, 0, 0, 0.5));
+    }
+    
+    .imageWidth {
+      width: var(--vc-body-fullwidth);
+    }
+    
+    img,
+    iron-image {
+      display: block;
+      width: var(--vc-body-fullwidth, '');
+      max-width: var(--vc-body-max-width, '');
+      --iron-image-width: var(--vc-body-fullwidth, '');
+    }
+    
+    .vcStaffCircle {
+      display: inline-block;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      color: #555;
+      background: url("../../images/vc_body_circle_background.jpeg");
+      overflow: hidden;
+      /*opacity: 1;*/
+    }
+  </style>
+
+  <template>
+
+    <div id="mainDiv" class$="{{mainDivClass}}">
+
+      <template is="dom-if" if="{{!reverse}}">
+        <template is="dom-if" if="{{src}}">
+          <div class="transparentToolbar imageWidth">
+            <template is="dom-if" if="{{!roundimage}}">
+              <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
+            </template>
+            <template is="dom-if" if="{{roundimage}}">
+              <div class="vcStaffCircle">
+                <iron-image src="[[src]]"></iron-image>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template is="dom-if" if="{{icon}}">
+          <div class="transparentToolbar">
+            <iron-icon icon="[[icon]]"></iron-icon>
+          </div>
+        </template>
+        <template is="dom-if" if="{{_space()}}">
+          <div class$="{{spaceClass}}">
+          </div>
+        </template>
+        <div>
+          <template is="dom-if" if="{{lbl}}">
+            <h1>[[lbl]]</h1>
+          </template>
+          <template is="dom-if" if="{{desc}}">
+            <vc-desc desc="[[desc]]"></vc-desc>
+          </template>
+        </div>
+      </template>
+
+      <template is="dom-if" if="{{reverse}}">
+        <div>
+          <template is="dom-if" if="{{lbl}}">
+            <h1>[[lbl]]</h1>
+          </template>
+          <template is="dom-if" if="{{desc}}">
+            <vc-desc desc="[[desc]]"></vc-desc>
+          </template>
+        </div>
+        <template is="dom-if" if="{{_space()}}">
+          <div class$="{{spaceClass}}">
+          </div>
+        </template>
+        <template is="dom-if" if="{{src}}">
+          <div class="transparentToolbar">
+            <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
+          </div>
+        </template>
+        <template is="dom-if" if="{{icon}}">
+          <div class="transparentToolbar">
+            <iron-icon icon="[[icon]]"></iron-icon>
+          </div>
+        </template>
+      </template>
+
+    </div>
+
+    <vc-query responsivewidthparam='--vc-body-responsive-width' largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam='--vc-body-responsive-icon-width' largescreen="{{largescreenicon}}"></vc-query>
+
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-body',
+      properties: {
+        lbl: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        src: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        icon: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        reverse: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        },
+        roundimage: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        },
+        mainDivClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "containerPercent m-b-2 layout start-justified"
+        },
+        spaceClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        align: {
+          type: String,
+          notify: true,
+          value: "horizontal"
+        },
+        margin: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          value: false
+        },
+        params: {
+          type: Array,
+          value: []
+        },
+        paramsicon: {
+          type: Array,
+          value: []
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        },
+        largescreenicon: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenIconChanged'
+        }
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        var margin = "";
+        if (that.margin) {
+          margin = newValue ? margin + "p-1" : margin + "p-4";
+        }
+        else {
+          margin = newValue ? margin + "m-b-2" : margin + "m-b-1";
+        }
+        for (let param of that.params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.align = (newValue && ((that.icon == "") || (that.icon == undefined))) ? 'vertical' : 'horizontal';
+        that.mainDivClass = "containerPercent layout start-justified" + " " + that.align + " " + margin;
+        that.style.maxWidth = (((that.icon == "") || (that.icon == undefined)) || newValue) ? "100%" : "352px"
+        that.updateStyles();
+      },
+
+      _largeScreenIconChanged: function (newValue) {
+        var that = this;
+        for (let param of that.paramsicon) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.spaceClass = newValue ? "m-l-1" : "m-l-2";
+        that.updateStyles();
+      },
+
+      windowResize: function () {
+      },
+
+      _space: function () {
+        return ((this.src || this.icon) && (this.desc || this.lbl)) && (this.align = "horizontal");
+      },
+
+      attached: function () {
+        var that = this;
+        that._largeScreenChanged(that.largescreen);
+        that._largeScreenIconChanged(that.largescreenicon);
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.params = [
+          { name: '--vc-body-fullwidth', largeValue: '', smallValue: '100%' },
+          { name: '--vc-body-max-width', largeValue: '256px', smallValue: '336px' }
+        ];
+        that.paramsicon = [
+          { name: '--vc-body-iron-icon-size', largeValue: '64px', smallValue: '32px' }
+        ];
+      }
+
+    });
+  </script>
+</dom-module>

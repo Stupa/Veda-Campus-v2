@@ -1,0 +1,326 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../components/vc-section/vc-header.html">
+<link rel="import" href="../components/vc-section/vc-body.html">
+<link rel="import" href="../components/vc-home/vc-home-map-image.html">
+<link rel="import" href="../components/vc-home/vc-home-header.html">
+<link rel="import" href="../components/vc-query/vc-query.html">
+
+<dom-module id="vc-home">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-alignment">
+       :host {
+        display: block;
+        --vc-card-simple-border: 5px solid var(--default-border-color);
+        --vc-body-p-color: var(--color-neutral-text-dark);
+        --vc-body-h-color: var(--color-neutral-text);
+        --vc-body-a-color: var(--primary-color-dark);
+        --vc-header-p-color: var(--color-neutral-text-dark);
+        --vc-header-a-color: var(--primary-color-dark);
+      }
+      
+      .container {
+        height: 100%;
+      }
+    </style>
+
+    <vc-home-header></vc-home-header>
+
+    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('desc')}}">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+        <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('desc')}}">
+          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
+        </template>
+      </vc-header>
+    </template>
+
+    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('domain')}}">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+        <vc-card-simple>
+          <vc-home-map-image places="{{places}}"></vc-home-map-image>
+        </vc-card-simple>
+      </vc-header>
+    </template>
+
+    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('commitments')}}">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+        <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('commitments')}}">
+          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
+        </template>
+      </vc-header>
+    </template>
+
+    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('participation')}}">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+        <div class="horizontal layout justified wrap container">
+          <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('participation')}}">
+            <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
+          </template>
+        </div>
+      </vc-header>
+    </template>
+
+    <vc-query largescreen="{{largescreen}}"></vc-query>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-home',
+      properties: {
+        types: {
+          type: Array,
+          value: []
+        },
+        headers: {
+          type: Array,
+          value: []
+        },
+        bodies: {
+          type: Array,
+          value: []
+        },
+        places: {
+          type: Array,
+          value: []
+        },
+        params: {
+          type: Array,
+          value: []
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        }
+      },
+
+      _headersIsDesc: function (type) {
+        return function (header) {
+          if (header.type == type) return true;
+          if (header.type != type) return false;
+        };
+      },
+
+      _bodiesIsDesc: function (type) {
+        return function (body) {
+          if (body.type == type) return true;
+          if (body.type != type) return false;
+        };
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        for (let param of that.params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.updateStyles();
+      },
+
+      windowResize: function () {
+        var that = this;
+      },
+
+      attached: function () {
+        var that = this;
+        that._largeScreenChanged(that.largescreen);
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.types = [
+          { lbl: "desc" },
+          { lbl: "domain" },
+          { lbl: "commitments" },
+          { lbl: "participation" },
+        ]
+        that.headers = [
+          {
+            type: this.types[0].lbl, lbl: "Présentation du projet", desc: [
+              { txt: "Le projet Veda Campus consiste en la création d’un centre permettant d’accueillir des groupes pratiquant des disciplines en rapport avec le Bien-Être, les Médecines Douces et le Développement Personnel dans des conditions optimales." }
+            ]
+          },
+          {
+            type: this.types[1].lbl, lbl: "Le domaine Veda Campus", desc: [
+              { txt: "Situé en pleine nature, le domaine s’étendra sur 25 hectares. Le bâtiment principal servira d’accueil, de boutique et de lieu d’exposition permanente. Des chalets en bois, regroupés en îlots autour du dojo, permettront à nos hôtes de pratiquer ou de suivre leur stage en toute quiétude. Chaque îlot sera isolé en pleine nature et possédera son propre style." }
+            ]
+          },
+          {
+            type: this.types[2].lbl, lbl: "Nos engagements", desc: [
+              { txt: "" }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "Participez, aidez", desc: [
+              { txt: "Vous aurez la possibilité de participer et/ou aider à ce projet de diverses manières :" }
+            ]
+          }
+        ];
+        that.bodies = [
+          {
+            type: this.types[0].lbl, lbl: "Recherche d'équilibre", src: this.resolveUrl("../images/home_about_01.jpeg"), desc: [
+              { txt: "Innovation(s) Depuis le siècle dernier, nous avons connu le développement des villages de vacances avec la création des congés payés, puis après-guerre avec l'augmentation du niveau vie est venue la génération de l'équipement électrique de la maison. Plus récemment, ce furent la génération des loisirs et celle des jeux vidéo. Aujourd'hui, nombre de villages de vacances	\"traditionnels\" ont perdu de la clientèle au profit de centres spécialisés, la maison est devenue électronique et centre de nos loisirs virtuels. Le numérique s'est glissé partout, au travail, à la maison, dans nos loisirs et relations. Tout est et se doit d'être innovant. A cause de cela, du stress, du rythme de la vie moderne, de plus en plus de personnes cherchent à se \"déconnecter complètement\". Si l 'évolution numérique est nécessaire, elle s'accompagne de la nécessité de \"faire des pauses\". Les activités et sports de ressourcement se sont donc développés en parallèle : Yoga, Tai Chi, massages ayurvédiques, méditation... Pas loin d'une centaine de pratiques différentes." }
+            ]
+          },
+          {
+            type: this.types[0].lbl, lbl: "Un marché méconnu en pleine évolution", src: this.resolveUrl("../images/home_about_02.jpeg"), desc: [
+              { txt: "L'INSEE, en 2013, recensait déjà 250.000 entreprises sur le marché du Bien-Être. Leurs activités se pratiquent en groupe, en week-end souvent et donnent de plus en plus lieu à des stages et séminaires de 3 à 5 jours, une, deux ou trois fois par an, chaque stage réunissant alors 10 à 20 personnes.Il y a assez peu de données sur ce marché de l'hébergement de stages et séminaires Bien-Être	&amp; Développement Personnel. La principale raison vient du manque de leader et de la dispersion qui en découle. Tout reste à faire, et notre ambition est devenir les N°1 reconnus et incontournables. Si innovant veut dire numérique, il veut aussi dire Bien-Être et Développement Personnel. Les deux choses sont liées et complémentaires. Tendances Le marché du Développement Personnel est en plein essor. Yoga, tantra, méditation, yoga, massages ayurvédiques, Taï Chi Chuan, Kyudo, Qi Qong, arts thérapeutiques, Reiki, Do In, Shiatsu, réflexologie, médecines douces, chants, biodanza, psychothérapies diverses… le nombre de disciplines et de pratiquants croissant de jour en jour. Aux USA, le plus grand centre de stages et séjours, l’Omega Institute, accueille 350 séminaires ou conférences et quelques 25.000 visiteurs par an." }
+            ]
+          },
+          {
+            type: this.types[0].lbl, lbl: "Une prise de conscience universelle", src: this.resolveUrl("../images/home_about_00.jpeg"), desc: [
+              { txt: "Au Parlement Britannique, le député Chris Ruane organise des cours de \"pleine conscience\". Depuis novembre 2014, l’Inde a un Ministre du Yoga. L’État français s’y met : \"Par arrêté du ministre de l'éducation nationale, en date du 4 juillet 2013, l'association Recherche sur le Yoga dans l'éducation (RYE) qui apporte son concours à l'enseignement public, est agréée pour une durée de cinq ans\". De grandes entreprises du CAC40 mettent à la disposition de leurs employés des salles, animateurs et temps libre pour pratiquer du Yoga, Tai Chi ou massages anti-stress. Les livres sur le développement personnel se retrouvent régulièrement en haut des ventes à la Fnac et sur Amazon. Les articles sur le sujet se multiplient (Le Monde, l’Express, France Info, le Point, le Figaro). Matthieu Ricard, l’interprète du Dalaï Lama et grand promoteur de la méditation, est devenu un personnage médiatique (en 2014, il a fait 30 passages TV et radio). Ses deux derniers livres sont dans les Top Ventes de la Fnac, Amazon et Cultura. Selon une enquête de 2013, 1/3 des Français ont entendu parler de stages ou séminaires de Développement Personnel durant l’année, 10% ont pensé à y participer. Cependant, l'offre en France reste pauvre et la demande exponentielle." }
+            ]
+          },
+          {
+            type: this.types[2].lbl, lbl: "Notre mission", src: this.resolveUrl("../images/home_commitments_00.jpeg"), desc: [
+              { txt: "Vous fournir un sanctuaire de sérénité où vivre vos stages et séjours en osmose avec la nature." }
+            ]
+          },
+          {
+            type: this.types[2].lbl, lbl: "Notre milieu de travail", src: this.resolveUrl("../images/home_commitments_01.jpeg"), desc: [
+              { txt: "Veda Campus est destiné à être un lieu de vie et de travail pour son équipe. Nous apportons un soin tout particulier à l'organisation, l'optimisation de la communication, la compréhension et l'efficacité. Vision partagée et des efforts de collaboration sont les pierres angulaires de la façon dont nous travaillons ensemble. Dès l'ouverture du domaine, nous nous engagerons dans l'obtention du label Lucie (norme ISO 26000), label de référence en Responsabilité Sociétale des Entreprises : Protection du Consommateur, Environnement, Bonnes Pratiques des Affaires, Relations et Conditions de Travail, Droits de l'Homme, Contribution au Développement Local, Gouvernance de l'Entreprise. (" },
+              { link: { href: "www.labellucie.com", txt: "www.labellucie.com" } },
+              { txt: ")" }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:handshake", desc: [
+              { txt: "En devenant associé (jusqu'à 30% des capitaux sont ouverts à investissement)." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:groupstroke", desc: [
+              { txt: "Si vous êtes un club, une association ou un professionnel du Bien-Être, des Médecines Douces ou du Développement Personnel, en pré-réservant ou en nous faisant part de votre volonté de réserver pour vos futurs stages/séminaires 2016. C'est sans aucun engagement. Ces pré-réservations nous serviront à faciliter les discussions avec les investisseurs et organismes prêteurs." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:chat", desc: [
+              { txt: "Si vous êtes un pratiquant, en parlant autour de vous, avec vos formateur, enseignant, amis. Les chalets seront ouverts à des locations à la semaine hors stages. Vous pouvez donc aussi nous faire part de votre intérêt/volonté de venir passer quelques jours de repos et de sérénité au domaine." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:coin-piles", desc: [
+              { txt: "En participant à notre campagne de crowdfunding. Très prochainement, nous allons lancer, auprès de deux grands acteurs du financement participatif, deux opérations d'appels de fonds (dons avec contrepartie, prêts)." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:wrench", desc: [
+              { txt: "En nous apportant une aide technique (expertise comptable, avocat, paysagiste, architecte, mécénat, contacts avec autorités locales...). Bien sûr, ce coup de main donnera lieu à contrepartie." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons:spastroke", desc: [
+              { txt: "En nous faisant part de votre volonté de nous rejoindre une fois le domaine ouvert. En effet, nous recherchons déjà la future équipe qui gérera le domaine." }
+            ]
+          },
+          {
+            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:facebook-square-stroke", desc: [
+              { txt: "Ou tout simplement en nous rejoignant sur " },
+              { link: { href: "https://www.facebook.com/VedaCampus", txt: "notre page Facebook" } },
+              { txt: " !" }
+
+            ]
+          },
+        ];
+        that.places = [
+          { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", topsmall: "67.89%", leftsmall: "84.2%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
+          { src: this.resolveUrl("../images/home_map_01"), icon: "vc-icons3:spastroke", topsmall: "82.25%", leftsmall: "1.74%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des yaourts suédois en fixant un caillou." },
+          { src: this.resolveUrl("../images/home_map_02"), icon: "vc-icons3:spastroke", topsmall: "45.69%", leftsmall: "1.74%", desc: "Le bois des bambous" },
+          { src: this.resolveUrl("../images/home_map_03"), icon: "vc-icons:home2", topsmall: "39.16%", leftsmall: "56.42%", desc: "Les chalets asiatiques où qu'on peut manger des nems. C'est bon les nems." },
+          { src: this.resolveUrl("../images/home_map_04"), icon: "vc-icons:group", topsmall: "60.05%", leftsmall: "39.06%", desc: "La yourte dojo. (sans les poules)... Mais bon, je préfèrais quand même avec les poules, ça faisait plus roots. Et c'était plus net parce que là, autant j'ai bien refait les chalets en virant la montagne enneigée, autant là c'est dégueulasse ! Ceci dit, ça fait un gros texte de test qui en plus cache la misère. ^^" },
+          { src: this.resolveUrl("../images/home_map_05"), icon: "vc-icons:group", topsmall: "20.89%", leftsmall: "53.82%", desc: "Le dojo du ciel" },
+          { src: this.resolveUrl("../images/home_map_06"), icon: "vc-icons3:spastroke", topsmall: "23.5%", leftsmall: "3.47%", desc: "Les ruches du domaine" },
+          { src: this.resolveUrl("../images/home_map_07"), icon: "vc-icons:home2", topsmall: "39.16%", leftsmall: "86.81%", desc: "Stone tipi" },
+          { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons3:spastroke", topsmall: "65.93%", leftsmall: "62.5%", desc: "Spa time" },
+          { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", topsmall: "39.16%", leftsmall: "28.65%", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
+        ];
+        that.params = [
+          { name: '--vc-card-simple-margin', largeValue: '0em', smallValue: '0em' },
+          { name: '--vc-card-simple-padding', largeValue: '0em', smallValue: '0em' },
+          { name: '--vc-card-simple-padding-right', largeValue: '0em', smallValue: '0em' }
+        ];
+      }
+
+    });
+
+
+
+/* AVAILABLE ON 2.0 */
+   /* class vchome extends Polymer.Element {
+
+      static get is() { return 'vc-home'; }
+
+      static get properties() {
+        return {
+          places: {
+            type: Array,
+            value() {
+              return [
+                { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", top: "520", left: "970", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
+                { src: this.resolveUrl("../images/home_map_01"), icon: "vc-icons:spa", top: "630", left: "20", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des yaourts suédois en fixant un caillou." },
+                { src: this.resolveUrl("../images/home_map_02"), icon: "vc-icons:spa", top: "350", left: "20", desc: "Le bois des bambous" },
+                { src: this.resolveUrl("../images/home_map_03"), icon: "vc-icons:home2", top: "300", left: "650", desc: "Les chalets asiatiques où qu'on peut manger des nems. C'est bon les nems." },
+                { src: this.resolveUrl("../images/home_map_04"), icon: "vc-icons:group", top: "460", left: "450", desc: "La yourte dojo. (sans les poules)... Mais bon, je préfèrais quand même avec les poules, ça faisait plus roots. Et c'était plus net parce que là, autant j'ai bien refait les chalets en virant la montagne enneigée, autant là c'est dégueulasse ! Ceci dit, ça fait un gros texte de test qui en plus cache la misère. ^^" },
+                { src: this.resolveUrl("../images/home_map_05"), icon: "vc-icons:group", top: "160", left: "620", desc: "Le dojo du ciel" },
+                { src: this.resolveUrl("../images/home_map_06"), icon: "vc-icons:spa", top: "180", left: "40", desc: "Les ruches du domaine" },
+                { src: this.resolveUrl("../images/home_map_07"), icon: "vc-icons:home2", top: "300", left: "1000", desc: "Stone tipi" },
+                { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons:spa", top: "505", left: "720", desc: "Spa time" },
+                { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", top: "300", left: "330", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
+              ]
+            }
+          },
+          headers: {
+            type: Array,
+            value() {
+              return [
+                { type: "desc", lbl: "Présentation du projet", desc: "Le projet Veda Campus consiste en la création d’un centre permettant d’accueillir des groupes pratiquant des disciplines en rapport avec le Bien-Être, les Médecines Douces et le Développement Personnel dans des conditions optimales." },
+                { type: "domain", lbl: "Le domaine Veda Campus", desc: "Situé en pleine nature, le domaine s’étendra sur 25 hectares. Le bâtiment principal servira d’accueil, de boutique et de lieu d’exposition permanente. Des chalets en bois, regroupés en îlots autour du dojo, permettront à nos hôtes de pratiquer ou de suivre leur stage en toute quiétude. Chaque îlot sera isolé en pleine nature et possédera son propre style." }
+              ]
+            }
+          }
+        }
+      }
+
+      computeFilter(string) {
+        if (!string) {
+          // set filter to null to disable filtering
+          return null;
+        } else {
+          // return a filter function for the current search string
+          string = string.toLowerCase();
+          return function (header) {
+            var first = header.firstname.toLowerCase();
+            var last = header.lastname.toLowerCase();
+            return (first.indexOf(string) != -1 ||
+              last.indexOf(string) != -1);
+          };
+        }
+      }
+    }
+
+    customElements.define(vchome.is, vchome);*/
+  </script>
+</dom-module>

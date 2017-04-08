@@ -1,0 +1,165 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../components/vc-query/vc-query.html">
+<link rel="import" href="vc-desc.html">
+
+
+<dom-module id="vc-header">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      --vc-header-max-width: 1344px;
+      max-width: var(--vc-header-max-width);
+      --vc-header-responsive-width: 720px;
+      --vc-desc-p-color: var(--vc-header-p-color);
+      --vc-desc-a-color: var(--vc-header-a-color);
+    } 
+
+    
+    .bottomdiv {
+      margin-bottom: var(--vc-header-bottomdiv-margin-bottom, '');
+    }
+    
+    .vcheadermarginright {
+      margin-right: var(--vc-header-margin-right, '');
+    }
+    
+    .titleText {
+      color: var(--primary-color-text);
+      background-color: var(--vc-header-main-bar-background-color, --primary-color-dark);
+    }
+  </style>
+  <template>
+
+    <div id="mainBar" class="layout vertical center-justified vcheadermarginright">
+      <div class="layout horizontal start-justified titleText p-0-5">
+        <div class="littleCircle bk-white"></div>
+        <div class="littleCircle bk-white"></div>
+        <div class="littleCircle bk-white"></div>
+      </div>
+    </div>
+
+    <div id="mainDiv" class$="{{mainDivClass}}">
+      <div class="bottomdiv">
+        <template is="dom-if" if="{{lbl}}">
+          <div>
+            <h8>[[lbl]]</h8>
+          </div>
+        </template>
+        <template is="dom-if" if="{{desc}}">
+          <div>
+            <vc-desc desc="[[desc]]"></vc-desc>
+          </div>
+        </template>
+      </div>
+      <content>
+      </content>
+    </div>
+
+    <vc-query responsivewidthparam='--vc-header-responsive-width' largescreen="{{largescreen}}"></vc-query>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'vc-header',
+      properties: {
+        lbl: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "",
+          observer: '_setInitMarginBottom'
+        },
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "",
+          observer: '_setInitMarginBottom'
+        },
+        endcap: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        nocontent: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: false,
+          observer: '_setInitMarginBottom'
+        },
+        params: {
+          type: Array,
+          value: [],
+          observer: '_setInitParams'
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        }
+      },
+
+      windowResize: function () {
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        var marginMain = "";
+        for (let param of that.params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        marginMain = newValue ? "p-1 m-l-1" : "m-l-2 p-4";
+        that.mainDivClass = "layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright" + " " + marginMain;
+        that.updateStyles();
+      },
+
+      _setInitParams: function () {
+        var that = this;
+        if (that.endcap) {
+          that.$.mainDiv.style.borderBottomLeftRadius = "5px";
+          that.$.mainDiv.style.borderBottomRightRadius = "5px";
+          that.style.marginBottom = "1em";
+        }
+        if ((that.lbl || that.desc) && (!that.nocontent)) {
+          that.customStyle['--vc-header-bottomdiv-margin-bottom'] = "2em";
+        }
+        if (that.params) {
+          that._largeScreenChanged(that.largescreen);
+        }
+      },
+
+      _setInitMarginBottom: function () {
+        var that = this;
+        if ((that.lbl || that.desc) && (!that.nocontent)) {
+          that.customStyle['--vc-header-bottomdiv-margin-bottom'] = "2em";
+        }
+        else {
+          that.customStyle['--vc-header-bottomdiv-margin-bottom'] = "0em";
+        }
+        that.updateStyles();
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.params = [
+          { name: '--vc-header-margin-right', largeValue: '2em', smallValue: '1em' },
+        ];
+      },
+
+    });
+  </script>
+</dom-module>

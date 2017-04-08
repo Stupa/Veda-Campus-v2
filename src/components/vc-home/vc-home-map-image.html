@@ -1,0 +1,186 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="vc-home-map-image-small.html">
+<link rel="import" href="vc-home-map-image-big.html">
+
+<dom-module id="vc-home-map-image">
+  <style include="shared-styles iron-flex iron-positioning iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      min-width: 100%;
+    }
+    
+    .position {
+      min-width: 100%;
+      height: 100%;
+    }
+    
+    .smallImage {
+      display: block;
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+    
+    .position {
+      position: relative;
+    }
+    
+    .coordzero {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    
+    .textBig {
+      position: absolute;
+      z-index: 1;
+      color: var(--primary-color-text);
+      max-width: 466px;
+    }
+    
+    h6 {
+      font-style: italic;
+    }
+    
+    .bigHide {
+      visibility: hidden;
+    }
+    
+    .bigShow {
+      visibility: visible;
+    }
+    
+    .bigShowColor iron-icon {
+      --iron-icon-fill-color: var(--primary-color-text);
+    }
+    
+    .bigHideColor iron-icon {
+      --iron-icon-fill-color: var(--secondary-color);
+    }
+    
+    img,
+    iron-image {
+      display: block;
+      width: 100%;
+      --iron-image-width: 100%;
+    }
+
+  </style>
+
+  <template>
+
+    <div class="transparentToolbar containerPercent card position">
+
+      <iron-image src="../../images/home_map_background.jpeg"></iron-image>
+
+      <template is="dom-repeat" items="{{places}}">
+        <vc-home-map-image-small index="{{index}}" currindex="{{currindex}}" src="[[item.src]]" topsmall="[[item.topsmall]]" leftsmall="[[item.leftsmall]]"
+          icon="[[item.icon]]">
+        </vc-home-map-image-small>
+      </template>
+
+      <template is="dom-repeat" items="{{places}}">
+        <vc-home-map-image-big index="{{index}}" currindex="{{currindex}}" src="[[item.src]]" desc="[[item.desc]]" topbig="{{_gettopbig(item.topsmall)}}"
+          bottombig="{{_getbottombig(item.topsmall)}}">
+        </vc-home-map-image-big>
+      </template> 
+
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'vc-home-map-image',
+      properties: {
+        currindex: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          value: -1
+        },
+        src: {
+          type: String,
+          notify: true
+        },
+        desc: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: ""
+        },
+        srcbig: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        srcsmall: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        top: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        left: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        hovered: false,
+        imageSmallClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "card m-0 smallImage bc-blue shadow bp-0-2"
+        },
+        iconSmallClass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "bigHideColor"
+        },
+        bigclass: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "vertical layout center-justified"
+        },
+        bigpos: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: "center-justified"
+        },
+        places: {
+          type: Array,
+          value: []
+        }
+      },
+
+      _gettopbig: function (item) {
+        var smallTop = Number(item.replace('%', ''));
+        var result = ""
+        if (smallTop >= 50) {
+          result = "1%";
+        }
+        return result;
+      },
+
+      _getbottombig: function (item) {
+        var smallTop = Number(item.replace('%', ''));
+        var result = ""
+        if (smallTop < 50) {
+          result = "2%";
+        }
+        return result;
+      }
+
+    });
+  </script>
+</dom-module>

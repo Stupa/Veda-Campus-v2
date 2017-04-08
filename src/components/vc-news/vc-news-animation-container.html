@@ -1,0 +1,74 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="vc-news-animation.html">
+
+<dom-module id="vc-news-animation-container">
+  <template>
+    <style is="custom-style">
+
+    </style>
+    <content></content>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-news-animation-container',
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior,
+      ],
+
+      properties: {
+        move: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          reflectToAttribute: true,
+          observer: "_move"
+        },
+        transformparamfrom: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        transformparamto: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        animationConfig: {
+          value: function () {
+            return {
+              'animation': {
+                name: 'vc-news-animation',
+                node: this,
+                timing: { duration: 600 },
+              }
+            }
+          }
+        }
+      },
+
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
+
+      _move: function (newValue, oldValue) {
+        var that = this;
+        if (newValue) {
+          that.move = false;
+          if (!isNaN(that.transformparamfrom) && !isNaN(that.transformparamto))
+            that.playAnimation('animation');
+        }
+      },
+
+      _onNeonAnimationFinish: function () {
+        var that = this;
+        that.transform('translate(-' + that.transformparamto + 'px, 0px)');
+      }
+
+    });
+  </script>
+</dom-module>

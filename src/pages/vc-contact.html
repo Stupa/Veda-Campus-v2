@@ -1,0 +1,214 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../vc-icons.html">
+<link rel="import" href="../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="../components/vc-query/vc-query.html">
+
+<dom-module id="vc-contact">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+      text-align: right;
+      --vc-contact-responsive-width: 251px;
+      --vc-card-simple-responsive-width: var(--vc-contact-responsive-width);
+      --vc-card-simple-background: url("../images/contactmapnb.png");
+      --vc-card-simple-background-color: var(--secondary-color-dark);
+    }
+    
+    h1,
+    h6,
+    h7,
+    p {
+      color: white;
+    }
+    
+    h1 {
+      font-size: var(--vc-contact-h1-font-size, '');
+    }
+    
+    h6 {
+      font-size: var(--vc-contact-h6-font-size, '');
+    }
+    
+    p {
+      font-size: var(--vc-contact-p-font-size, '');
+    }
+    
+    h7 {
+      font-weight: bolder;
+      font-size: var(--vc-contact-h7-font-size, '');
+    }
+    
+    .contactsmalltext {
+      width: var(--vc-contact-smalltext-width, '');
+      min-width: var(--vc-contact-smalltext-width, '');
+    }
+    
+    iron-icon {
+      --iron-icon-height: 28px;
+      --iron-icon-width: 28px;
+      --iron-icon-fill-color: white;
+    }
+  </style>
+
+  <template>
+
+    <vc-card-simple params="[[vccardsimpleparams]]" paramssmaller="[[vccardsimpleparamssmaller]]">
+      <div class="layout horizontal end-justified ">
+        <p>
+          <a href="https://www.facebook.com/VedaCampus">
+            <iron-icon icon="vc-icons2:facebook-square"></iron-icon>
+          </a>
+        </p>
+      </div>
+      <div class="layout horizontal end-justified">
+        <h1 class="m-t-0 m-b-0">
+          Contactez-nous
+        </h1>
+      </div>
+      <div class="layout horizontal end-justified ">
+        <h6 class="m-t-0-5 m-b-0 contactsmalltext">
+          VedaCampus est une entreprise privée en cours d'enregistrement auprès du Registre National du Commerce et des Sociétés. Toutes
+          les informations sont données à titre indicatif.
+        </h6>
+      </div>
+      <div class="layout horizontal end-justified ">
+        <p class="m-t-2 m-b-0">
+          Tél. : +33 663 905 363
+        </p>
+      </div>
+      <div class="layout horizontal end-justified ">
+        <h7 class="m-t-0-5 m-b-0"><a class="contactemail" href="mailto:VedaCampus@free.fr?Subject=Demande de contact">
+          VedaCampus@free.fr
+          </a>
+        </h7>
+      </div>
+    </vc-card-simple>
+
+    <vc-query largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam='--vc-contact-responsive-width' largescreen="{{largescreensmaller}}"></vc-query>
+
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-contact',
+      properties: {
+        params: {
+          type: Array,
+          value: []
+        },
+        paramssmaller: {
+          type: Array,
+          value: []
+        },
+        vccardsimpleparams: {
+          type: Array,
+          value: []
+        },
+        vccardsimpleparamssmaller: {
+          type: Array,
+          value: []
+        },
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChanged'
+        },
+        largescreensmaller: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true,
+          observer: '_largeScreenChangedSmaller'
+        },
+      },
+
+      _largeScreenChangedSmaller: function (newValue) {
+        var that = this;
+        that._largeScreenChangedParams(newValue, that.paramssmaller);
+        if (!newValue && !that.largescreen) {
+          that._largeScreenChangedParams(that.largescreen, that.params);
+        }
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        that._largeScreenChangedParams(newValue, that.params);
+      },
+
+      _largeScreenChangedParams: function (newValue, params) {
+        var that = this;
+        for (let param of params) {
+          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        }
+        that.updateStyles();
+      },
+
+      windowResize: function () {
+        var that = this;
+      },
+
+      attached: function () {
+        var that = this;
+        if (that.largescreensmaller) {
+          that._largeScreenChangedParams(that.largescreensmaller, that.paramssmaller);
+        }
+        else {
+          that._largeScreenChangedParams(that.largescreen, that.params);
+        }
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.params = [
+          { name: '--vc-contact-h1-font-size', largeValue: '1.3em', smallValue: '1.1em' },
+          { name: '--vc-contact-h6-font-size', largeValue: '0.9em', smallValue: '0.7em' },
+          { name: '--vc-contact-h7-font-size', largeValue: '2em', smallValue: '1.5em' },
+          { name: '--vc-contact-p-font-size', largeValue: '', smallValue: '0.9em' },
+          { name: '--vc-contact-smalltext-width', largeValue: '360px', smallValue: '320px' }
+        ];
+        that.paramssmaller = [
+          { name: '--vc-contact-smalltext-width', largeValue: '320px', smallValue: '256px' }
+        ];
+        that.vccardsimpleparams = [
+          { name: '--vc-card-simple-margin', largeValue: '2em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding', largeValue: '6em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding-right', largeValue: '8em', smallValue: '2em' },
+          { name: '--vc-card-simple-padding-top', largeValue: '2em', smallValue: '2em' },
+          { name: '--vc-card-simple-padding-bottom', largeValue: '2em', smallValue: '2em' }
+        ];
+        that.vccardsimpleparamssmaller = [
+          { name: '--vc-card-simple-margin', largeValue: '1em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding', largeValue: '1em', smallValue: '1em' },
+          { name: '--vc-card-simple-padding-right', largeValue: '2em', smallValue: '2em' },
+          { name: '--vc-card-simple-padding-top', largeValue: '2em', smallValue: '2em' },
+          { name: '--vc-card-simple-padding-bottom', largeValue: '2em', smallValue: '2em' }
+
+        ];
+      },
+    });
+  </script>
+</dom-module>

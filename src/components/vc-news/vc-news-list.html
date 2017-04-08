@@ -1,0 +1,87 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="vc-news-header.html">
+<link rel="import" href="vc-news-body.html">
+
+<dom-module id="vc-news-list">
+  <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+     :host {
+      display: block;
+    }
+    
+    .containerPercent {
+      height: 100%;
+    }
+  </style>
+
+  <template>
+
+    <div id="news" class="transparentToolbar horizontal layout left-justified containerPercent">
+
+
+
+      <template is="dom-repeat" items="[[types]]" as="type">
+        <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIs(type)}}">
+          <vc-news-header>
+            <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIs(type)}}">
+              <vc-news-body src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" align="vertical"></vc-news-body>
+            </template>
+          </vc-news-header>
+        </template>
+      </template>
+
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-news-list',
+      properties: {
+        types: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        headers: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        bodies: {
+          type: Array,
+          value: [],
+          notify: true,
+          reflectToAttribute: true
+        },
+        width: {
+          type: Number,
+          notify: true,
+          reflectToAttribute: true,
+          observer: "_widthChanged"
+        }
+      },
+
+      _widthChanged: function (newValue, oldValue) {
+        var that = this;
+        that.$.news.style.width = newValue + "px";
+      },
+
+      _headersIs: function (type) {
+        return function (header) {
+          if (header.type == type) return true;
+          if (header.type != type) return false;
+        };
+      },
+
+      _bodiesIs: function (type) {
+        return function (body) {
+          if (body.type == type) return true;
+          if (body.type != type) return false;
+        };
+      }
+
+    });
+  </script>
+</dom-module>
