@@ -11,6 +11,11 @@
       ".read": true,
       ".write": "auth.uid == 'uTE0YGSyIphTijQjObP8Whs0sd02'",
       ".validate": true
-    }  
+    },
+    "staff": {
+      ".read": true,
+      ".write": "auth.uid == 'uTE0YGSyIphTijQjObP8Whs0sd02'",
+      ".validate": true
+    }
   }
 }
