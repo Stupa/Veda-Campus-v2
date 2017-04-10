@@ -23,7 +23,6 @@
       margin: 0 0 10px 0;
     }
     
-    
     h1 {
       font-weight: bolder;
     }
@@ -38,41 +37,21 @@
 
   <template>
 
+    <div id="mainDiv" class="containerPercent layout vertical start-justified">
 
-
-    <div id="mainDiv" class$="{{mainDivClass}}">
-
-      <template is="dom-if" if="{{!reverse}}">
-        <!--<template id="someDomIf" is="dom-if" if="{{src}}" restamp>-->
-        <template is="dom-if" if="{{src}}">
-          <div id="img" class="transparentToolbar newsImage">
-            <iron-image src="[[src]]"></iron-image>
-          </div>
-        </template>
-
-        <div class="p-1">
-          <template is="dom-if" if="{{lbl}}">
-            <h1 class="m-t-0">[[lbl]]</h1>
-          </template>
-          <template is="dom-if" if="{{desc}}">
-            <vc-desc desc="[[desc]]"></vc-desc>
-          </template>
+      <template is="dom-if" if="[[src]]">
+        <div id="img" class="transparentToolbar newsImage">
+          <iron-image src="[[src]]"></iron-image>
         </div>
       </template>
-
-      <template is="dom-if" if="{{reverse}}">
-        <div>
-          <h1>[[lbl]]</h1>
+      <div class="p-1">
+        <template is="dom-if" if="[[lbl]]">
+          <h1 class="m-t-0">[[lbl]]</h1>
+        </template>
+        <template is="dom-if" if="[[desc]]">
           <vc-desc desc="[[desc]]"></vc-desc>
-        </div>
-        <div class="m-l-2">
-        </div>
-        <template is="dom-if" if="{{src}}">
-          <div class="transparentToolbar">
-            <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
-          </div>
         </template>
-      </template>
+      </div>
 
     </div>
 
@@ -83,76 +62,15 @@
       is: 'vc-news-body',
       properties: {
         lbl: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
         desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: Array
         },
         src: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
-        },
-        reverse: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          value: false
-        },
-        mainDivClass: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: "containerPercent layout start-justified"
-        },
-
-        align: {
-          type: String,
-          notify: true,
-          value: "horizontal"
-        },
-      },
-
-      attached: function () {
-        var that = this;
-        that.windowResize();
-      },
-
-      windowResize: function () {
-        var that = this;
-        that.setClass();
-      },
-
-      _space: function () {
-        return this.src && (this.desc || this.lbl);
-      },
-
-      setClass: function () {
-        var that = this;
-        that.mainDivClass = "containerPercent layout" + " " + that.align;
-      },
-
-      ready: function () {
-        var that = this;
-        if (document.readyState != 'loading') {
-          /*this.domReady();*/
-        } else {
-          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+          type: String
         }
-        window.addEventListener("resize", function () { that.windowResize(); });
-        if (that.width == "") {
-          that.width.width = "0px";
-        }
-        that.windowResize();
       }
-
 
     });
   </script>

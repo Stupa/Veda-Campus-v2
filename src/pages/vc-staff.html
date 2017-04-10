@@ -14,9 +14,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../components/vc-section/vc-header.html">
 <link rel="import" href="../components/vc-section/vc-body.html">
 <link rel="import" href="../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+
 
 <dom-module id="vc-staff">
   <template>
+
     <style include="shared-styles iron-flex iron-flex-alignment">
        :host {
         display: block;
@@ -24,7 +27,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --vc-card-simple-background-color: var(--secondary-color-dark);
         --vc-body-p-color: var(--primary-color-text);
         --vc-body-h-color: var(--primary-color-dark);
-        /*--vc-body-a-color: var(--secondary-color-dark);*/
         --vc-header-p-color: var(--color-neutral-text-dark);
         --vc-header-a-color: var(--secondary-color-dark);
         --vc-header-main-bar-background-color: var(--secondary-color-dark);
@@ -38,13 +40,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('staff')}}">
+    <firebase-query app-name="vc" path="/[[table]]" data="{{dataread}}"></firebase-query>
+
+    <template is="dom-repeat" items="[[headers]]" as="header" filter="[[_headersIsDesc('staff')]]">
       <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" endcap nocontent>
       </vc-header>
     </template>
-    <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('staff')}}">
+    <template is="dom-repeat" items="[[dataread]]" as="data">
       <vc-card-simple params="[[vccardsimpleparams]]" paramssmaller="[[vccardsimpleparamssmaller]]">
-        <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" margin roundimage></vc-body>
+        <vc-body src="[[data.src]]" lbl="[[data.lbl]]" desc="[[data.desc]]" margin roundimage></vc-body>
       </vc-card-simple>
     </template>
 
@@ -54,25 +58,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer({
       is: 'vc-staff',
       properties: {
+        table: {
+          type: String,
+          value: 'staff',
+        },
+        dataread: {
+          type: Object
+        },
         types: {
-          type: Array,
-          value: []
+          type: Array
         },
         headers: {
-          type: Array,
-          value: []
-        },
-        bodies: {
-          type: Array,
-          value: []
+          type: Array
         },
         vccardsimpleparams: {
-          type: Array,
-          value: []
+          type: Array
         },
         vccardsimpleparamssmaller: {
-          type: Array,
-          value: []
+          type: Array
         }
       },
 
@@ -90,23 +93,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
       },
 
-      windowResize: function () {
-        var that = this;
-      },
-
-
       ready: function () {
         var that = this;
-        if (document.readyState != 'loading') {
-          /*this.domReady();*/
-        } else {
-          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
-        }
-        window.addEventListener("resize", function () { that.windowResize(); });
-        if (that.width == "") {
-          that.width.width = "0px";
-        }
-        that.windowResize();
         that.types = [
           { lbl: "staff" }
         ]
@@ -121,13 +109,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             ]
           }
         ];
-        that.bodies = [
-          {
-            type: this.types[0].lbl, lbl: "Jorge Mendes", src: this.resolveUrl("../images/staff_00.png"), desc: [
-              { txt: "30 ans comme responsable d’Efficacité Commerciale et d’Entreprise, Coach en Management, Motivation, Gestion de Stress. Organisateur de centaines de stages, séminaires en France et à l'étranger. Pratiquant de Tai Chi Chuan et de Gunshu. J’ai ainsi pu visiter et travailler dans des dizaines de centres de formation et de séminaires, rarement adaptés (souvent des hôtels). J'ai pris la décision, à l’été 2014, d’aller plus loin et développer moi-même un tel Centre. Dédié aux stages de Management, Bien Être, Médecines Douces ou Développement Personnel, le domaine devrait se situer dans une zone préservée, en pleine nature, au calme et suffisamment isolé pour préserver la quiétude des stagiaires." }
-            ]
-          },
-        ];
         that.vccardsimpleparams = [
           { name: '--vc-card-simple-margin', largeValue: '2em', smallValue: '1em' },
           { name: '--vc-card-simple-padding', largeValue: '0em', smallValue: '0em' },
@@ -140,4 +121,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
   </script>
+
 </dom-module>

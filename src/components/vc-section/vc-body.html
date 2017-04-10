@@ -63,57 +63,57 @@
 
     <div id="mainDiv" class$="{{mainDivClass}}">
 
-      <template is="dom-if" if="{{!reverse}}">
-        <template is="dom-if" if="{{src}}">
+      <template is="dom-if" if="[[!reverse]]">
+        <template is="dom-if" if="[[src]]">
           <div class="transparentToolbar imageWidth">
-            <template is="dom-if" if="{{!roundimage}}">
+            <template is="dom-if" if="[[!roundimage]]">
               <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
             </template>
-            <template is="dom-if" if="{{roundimage}}">
+            <template is="dom-if" if="[[roundimage]]">
               <div class="vcStaffCircle">
                 <iron-image src="[[src]]"></iron-image>
               </div>
             </template>
           </div>
         </template>
-        <template is="dom-if" if="{{icon}}">
+        <template is="dom-if" if="[[icon]]">
           <div class="transparentToolbar">
             <iron-icon icon="[[icon]]"></iron-icon>
           </div>
         </template>
-        <template is="dom-if" if="{{_space()}}">
+        <template is="dom-if" if="[[_space()]]">
           <div class$="{{spaceClass}}">
           </div>
         </template>
         <div>
-          <template is="dom-if" if="{{lbl}}">
+          <template is="dom-if" if="[[lbl]]">
             <h1>[[lbl]]</h1>
           </template>
-          <template is="dom-if" if="{{desc}}">
+          <template is="dom-if" if="[[desc]]">
             <vc-desc desc="[[desc]]"></vc-desc>
           </template>
         </div>
       </template>
 
-      <template is="dom-if" if="{{reverse}}">
+      <template is="dom-if" if="[[reverse]]">
         <div>
-          <template is="dom-if" if="{{lbl}}">
+          <template is="dom-if" if="[[lbl]]">
             <h1>[[lbl]]</h1>
           </template>
-          <template is="dom-if" if="{{desc}}">
+          <template is="dom-if" if="[[desc]]">
             <vc-desc desc="[[desc]]"></vc-desc>
           </template>
         </div>
-        <template is="dom-if" if="{{_space()}}">
+        <template is="dom-if" if="[[_space()]]">
           <div class$="{{spaceClass}}">
           </div>
         </template>
-        <template is="dom-if" if="{{src}}">
+        <template is="dom-if" if="[[src]]">
           <div class="transparentToolbar">
             <iron-image class="card bc-default shadow bp-0-2" src="[[src]]"></iron-image>
           </div>
         </template>
-        <template is="dom-if" if="{{icon}}">
+        <template is="dom-if" if="[[icon]]">
           <div class="transparentToolbar">
             <iron-icon icon="[[icon]]"></iron-icon>
           </div>
@@ -133,86 +133,56 @@
       is: 'vc-body',
       properties: {
         lbl: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
         desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: Array
         },
         src: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
         icon: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
         reverse: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
           value: false
         },
         roundimage: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
           value: false
         },
         mainDivClass: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
           value: "containerPercent m-b-2 layout start-justified"
         },
         spaceClass: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true
+          type: String
         },
         align: {
           type: String,
-          notify: true,
           value: "horizontal"
         },
         margin: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          value: false
+          type: Boolean
         },
         params: {
-          type: Array,
-          value: []
+          type: Array
         },
         paramsicon: {
-          type: Array,
-          value: []
+          type: Array
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChanged'
+          observer: '_largescreenChanged'
         },
         largescreenicon: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenIconChanged'
+          observer: '_largescreeniconChanged'
         }
       },
 
-      _largeScreenChanged: function (newValue) {
+      _largescreenChanged: function (newValue) {
         var that = this;
         var margin = "";
         if (that.margin) {
@@ -221,8 +191,10 @@
         else {
           margin = newValue ? margin + "m-b-2" : margin + "m-b-1";
         }
-        for (let param of that.params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
         }
         that.align = (newValue && ((that.icon == "") || (that.icon == undefined))) ? 'vertical' : 'horizontal';
         that.mainDivClass = "containerPercent layout start-justified" + " " + that.align + " " + margin;
@@ -230,10 +202,12 @@
         that.updateStyles();
       },
 
-      _largeScreenIconChanged: function (newValue) {
+      _largescreeniconChanged: function (newValue) {
         var that = this;
-        for (let param of that.paramsicon) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.paramsicon) {
+          for (let param of that.paramsicon) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
         }
         that.spaceClass = newValue ? "m-l-1" : "m-l-2";
         that.updateStyles();
@@ -248,8 +222,8 @@
 
       attached: function () {
         var that = this;
-        that._largeScreenChanged(that.largescreen);
-        that._largeScreenIconChanged(that.largescreenicon);
+        that._largescreenChanged(that.largescreen);
+        that._largescreeniconChanged(that.largescreenicon);
       },
 
       ready: function () {

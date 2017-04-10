@@ -1,7 +1,6 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../components/vc-card-simple/vc-card-simple.html">
 <link rel="import" href="../../components/vc-query/vc-query.html">
 
 <dom-module id="vc-home-map-image-big">
@@ -55,7 +54,7 @@
 
     <div id="mainBig" class="card transparentToolbar horizontal layout center-justified containerPercent">
       <div class="relative card bp-0-2 bc-white shadow">
-        <iron-image src="[[srcbig]]"></iron-image>
+        <iron-image src="[[_setsrcbig(src)]]"></iron-image>
         <div class="textBig">
           <div class="card horizontal transparentToolbar layout center-justified containerPercent">
             <h6 class="darkToolbar">[[desc]]</h6>
@@ -73,106 +72,92 @@
       is: 'vc-home-map-image-big',
       properties: {
         index: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         currindex: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0,
           observer: '_switchVisibility'
         },
         src: {
-          type: String,
-          notify: true
+          type: String
         },
         desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
-        topbig: {
+        top: {
           type: String,
-          notify: true,
-          observer: '_topbigChanged'
-        },
-        bottombig: {
-          type: String,
-          notify: true,
-          observer: '_bottombigChanged'
-        },
-        srcbig: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true
-        },
-        hovered: {
-          value: false,
+          observer: '_topChanged'
         },
         params: {
-          type: Array,
-          value: []
+          type: Array
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChanged'
+          observer: '_largescreenChanged'
         }
       },
 
       _switchVisibility: function () {
         var that = this;
         if (that.currindex == that.index) {
-          that._onHovered();
+          that.style.visibility = "visible";
+          that.style.display = "block";
         }
         else {
-          that._onUnhovered();
+          that.style.visibility = "hidden";
+          that.style.display = "none";
         }
       },
 
-      _onHovered: function () {
+      _settopbig: function () {
         var that = this;
-        that.style.visibility = "visible";
-        that.style.display = "block";
-      },
-
-      _onUnhovered: function () {
-        var that = this;
-        that.style.visibility = "hidden";
-        that.style.display = "none";
-      },
-
-      _bottombigChanged: function () {
-        var that = this;
-        that.style.bottom = that.bottombig;
-      },
-
-      _topbigChanged: function () {
-        var that = this;
-        that.style.top = that.topbig;
-      },
-
-      _largeScreenChanged: function (newValue) {
-        var that = this;
-        for (let param of that.params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        var top = Number(that.top.replace('%', ''));
+        var result = ""
+        if (top >= 50) {
+          result = "1%";
         }
-        that.updateStyles();
+        return result;
+      },
+
+      _setbottombig: function () {
+        var that = this;
+        var top = Number(that.top.replace('%', ''));
+        var result = ""
+        if (top < 50) {
+          result = "2%";
+        }
+        return result;
+      },
+
+      _setsrcbig: function (src) {
+        if (src) {
+          return src + "_big.jpeg";
+        }
+      },
+
+      _topChanged: function () {
+        var that = this;
+        that.style.bottom = that._setbottombig();
+        that.style.top = that._settopbig();
+      },
+
+      _largescreenChanged: function (newValue) {
+        var that = this;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          that.updateStyles();
+        }
       },
 
       attached: function () {
         var that = this;
-        that._largeScreenChanged(that.largescreen);
+        that._largescreenChanged(that.largescreen);
       },
 
       ready: function () {
         var that = this;
-        that.srcbig = that.src + "_big.jpeg";
         that.params = [
           { name: '--vc-home-map-image-font-size', largeValue: '0.9em', smallValue: '0.7em' }
         ];

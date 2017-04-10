@@ -48,7 +48,6 @@
       <a href="/[[name]]">
         <iron-icon icon="[[icon]]"></iron-icon>[[desc]]</a>
     </div>
-    <!--<template is="dom-if" if="{{jump}}">-->
 
   </template>
 
@@ -57,31 +56,20 @@
       is: 'vc-menu-item-button',
       properties: {
         name: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ''
+          type: String
         },
         icon: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ''
+          type: String
         },
         desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ''
+          type: String
         },
         jump: {
           type: String,
-          notify: true,
           observer: '_isJump'
         },
         selectedpage: {
           type: String,
-          notify: true,
           observer: '_isSelected'
         },
         divclass: {

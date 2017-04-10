@@ -1,7 +1,6 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../components/vc-card-simple/vc-card-simple.html">
 <link rel="import" href="../vc-query/vc-query.html">
 
 
@@ -20,16 +19,8 @@
     
     .containerPercent {
       height: 100%;
-    }
-    
-    .bigShowColor iron-icon {
-      --iron-icon-fill-color: var(--primary-color-text);
-    }
-    
-    .bigHideColor iron-icon {
-      --iron-icon-fill-color: var(--secondary-color);
-    }
-    
+    }    
+   
     iron-icon {
       position: absolute;
       top: -0.2em;
@@ -50,98 +41,70 @@
   </style>
   <template>
 
-    <div id="mainSmall" class="position" on-mouseover="_onHovered" on-mouseout="_onUnhovered">
-      <iron-icon id="iconSmall" class$="{{iconSmallClass}}" icon="{{icon}}"></iron-icon>
-      <iron-image id="imageSmall" class$="{{imageSmallClass}}" src="[[srcsmall]]"></iron-image>
+    <div id="mainSmall" on-mouseover="_onHovered" on-mouseout="_onUnhovered">
+      <iron-icon id="iconSmall" class$="{{iconSmallClass}}" icon="[[icon]]"></iron-icon>
+      <iron-image id="imageSmall" class$="{{imageSmallClass}}" src="[[_setsrcsmall(src)]]"></iron-image>
     </div>
 
-
   </template>
+
   <script>
     Polymer({
       is: 'vc-home-map-image-small',
       properties: {
         index: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         currindex: {
           type: Number,
           notify: true,
-          reflectToAttribute: true,
-          value: 0
         },
         src: {
-          type: String,
-          notify: true,
+          type: String
         },
-        srcsmall: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true
+        top: {
+          type: String
         },
-        topsmall: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true
-        },
-        leftsmall: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true
+        left: {
+          type: String
         },
         icon: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
-        hovered: false,
         imageSmallClass: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
           value: "card m-0 smallImage bc-blue shadow bp-0-2"
         },
         iconSmallClass: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
           value: "bigHideColor"
-        },
-        bigpos: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: "center-justified",
         }
       },
 
       _onHovered: function (event) {
         var that = this;
         that.currindex = that.index;
-        that.hovered = true;
         that.imageSmallClass = that.imageSmallClass.replace("bc-blue", "bc-white");
         that.$.iconSmall.style.fill = that.getComputedStyleValue('--primary-color-text');
       },
       _onUnhovered: function (event) {
         var that = this;
         that.currindex = -1;
-        that.hovered = false;
         that.imageSmallClass = that.imageSmallClass.replace("bc-white", "bc-blue");
         that.$.iconSmall.style.fill = that.getComputedStyleValue('--secondary-color');
       },
 
+      _setsrcsmall: function (src) {
+        if (src) {
+          return src + "_small.jpeg";
+        }
+      },
+
       ready: function () {
         var that = this;
-        that.srcsmall = that.src + "_small.jpeg";
-        that.style.top = that.topsmall;
-        that.style.left = that.leftsmall;
+        that.style.top = that.top;
+        that.style.left = that.left;
       }
-
-
     });
   </script>
 </dom-module>

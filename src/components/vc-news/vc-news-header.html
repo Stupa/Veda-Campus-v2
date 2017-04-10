@@ -10,18 +10,10 @@
       display: block;
       min-width: var(--vc-news-header-min-width);
       --news-content-border: 1px;
-    }
-    
-    p {
-      color: var(--color-neutral-text-dark);
-      font-weight: 600;
-      font-size: 0.8em;
-      text-align: justify;
-    }
+    }   
     
     .titleText {
       color: var(--primary-color-text);
-      /*background-color: var(--primary-color-dark);*/
     }
     
     #mainDiv {
@@ -54,42 +46,22 @@
     Polymer({
       is: 'vc-news-header',
       properties: {
-        lbl: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
-        },
-        desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
-        },
         littlecircleclass: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
           value: "littleCircle bk-white"
         },
         maindivclass: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
           value: "layout vertical start-justified bc-default whiteToolbarBody p-0 m-0"
         },
       },
 
       _onHovered: function (event) {
-        /*this.currindex = this.index;*/
-        /*this.hovered = true;*/
         this.littlecircleclass = this.littlecircleclass.replace("bk-white", "bk-blue-dark");
         this.maindivclass = this.maindivclass.replace("bc-default", "bc-blue-dark");
       },
 
       _onUnhovered: function (event) {
-        /*this.currindex = -1;
-        this.hovered = false;*/
         this.littlecircleclass = this.littlecircleclass.replace("bk-blue-dark", "bk-white");
         this.maindivclass = this.maindivclass.replace("bc-blue-dark", "bc-default");
       }

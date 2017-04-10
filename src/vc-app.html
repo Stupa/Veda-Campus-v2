@@ -23,11 +23,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="vc-icons.html">
 <link rel="import" href="styles/shared-styles.html">
 <link rel="import" href="components/vc-menu-item/vc-menu-item-button.html">
-
-
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 
 <dom-module id="vc-app">
+
   <template>
     <style include="shared-styles">
        :host {
@@ -74,7 +77,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-
+    <firebase-app name="vc" auth-domain="vedacampus.firebaseapp.com" database-url="https://vedacampus.firebaseio.com" api-key="AIzaSyDcsS2GsecC2mFxUlgnCoYnPHI2hG_Z-tE"></firebase-app>
+    <!--<firebase-auth app-name="vc" id="auth" user="{{user}}" status-known="{{statusknown}}" signed-in="{{signedin}}" on-error="_onFirebaseError"></firebase-auth>
+    <firebase-query app-name="vc" id="query" path="/[[table]]/[[user.uid]]" data="{{datawrite}}"></firebase-query>
+    <firebase-document app-name="vc" path="/[[table]]/[[user.uid]]" data="{{dataread}}"></firebase-document>-->
 
     <app-location route="{{route}}"></app-location>
     <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
@@ -137,23 +143,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         pagewidth: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
           value: 0
         },
-        /*responsivewidth: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
-        },*/
         narrow: {
           type: Boolean,
           notify: true,
           reflectToAttribute: true,
           value: false
         }
-
       },
 
       observers: [
@@ -181,9 +178,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var that = this;
         that.pagewidth = Number(window.getComputedStyle(that.$.pages, null).getPropertyValue('width').replace('px', ''));
         that.narrow = that.$.appdrawerlayout.narrow;
-        /*that.menuwidth = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
-        /*that.pagewidththreshold = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
-        /*that.responsivewidth = Number(that.$.appdrawerlayout.responsiveWidth.replace('px', ''));*/
       },
 
       attached: function () {
@@ -213,6 +207,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           /*{ name: "auth", icon: "vc-icons:input", desc: "Connexion", jump: true },
           { name: "user", icon: "vc-icons:person", desc: "Nouveau compte", jump: false }*/
         ];
+        /*that.menuwidth = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
+        /*that.pagewidththreshold = Number(that.$.drawer.getComputedStyleValue('--app-drawer-width').replace('px', ''));*/
+        /*that.responsivewidth = Number(that.$.appdrawerlayout.responsiveWidth.replace('px', ''));*/
+        /*if (!(Object.keys(that.dataread).length === 0 && that.dataread.constructor === Object)) {*/
+        /*that.$.auth.signOut();*/
       }
 
     });

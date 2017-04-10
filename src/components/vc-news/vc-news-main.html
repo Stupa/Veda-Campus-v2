@@ -26,11 +26,13 @@
 
       <vc-news-header-arrow class="flex-none" id="previous" src="vc-icons2:chevron-circle-left-o" showheader index="{{index}}"
         hideindex="0" width="[[width]]" move="{{move}}" transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}"></vc-news-header-arrow>
+
       <div class="transparentToolbar horizontal layout left-justified containerPercent">
         <vc-news-animation-container transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}" move="{{move}}">
-          <vc-news-list types="[[types]]" headers="[[headers]]" bodies="[[bodies]]" width="[[width]]"></vc-news-list>
+          <vc-news-list dataread="[[dataread]]" width="[[width]]"></vc-news-list>
         </vc-news-animation-container>
       </div>
+
       <vc-news-header-arrow class="flex-none" id="next" src="vc-icons2:chevron-circle-right-o" next="true" index="{{index}}" hideindex="[[lastindex]]"
         width="[[width]]" move="{{move}}" transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}"></vc-news-header-arrow>
 
@@ -45,115 +47,71 @@
       is: 'vc-news-main',
       properties: {
         pagewidth: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         width: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
           observer: "_setClass"
         },
         newsperpage: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         oldnewsperpage: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
-        types: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true
-        },
-        headers: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true
-        },
-        bodies: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true,
-          observer: "_bodiesChanged"
+        dataread: {
+          type: Object
         },
         index: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: -1
+          type: Number
         },
         lastindex: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: -1
+          type: Number
         },
         transformparamfrom: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         transformparamto: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: 0
+          type: Number
         },
         move: {
-          type: Boolean,
-          value: false,
-          notify: true,
-          reflectToAttribute: true
+          type: Boolean
         },
         params: {
-          type: Array,
-          value: []
+          type: Array
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
           observer: '_largeScreenChanged'
         },
         narrow: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          value: false
+          type: Boolean
         }
       },
 
+      observers: [
+        '_bodiesChanged(dataread.*)'
+      ],
+
       _bodiesChanged: function (newValue) {
         var that = this;
-        that.lastindex = Math.ceil(that.bodies.length / that.newsperpage) - 1;
+        that.windowResize();
       },
 
       _largeScreenChanged: function (newValue) {
         var that = this;
-        for (let param of that.params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          that.updateStyles();
         }
-        that.updateStyles();
-        that.windowResize();
       },
 
       attached: function () {
         var that = this;
         that.index = 0;
         that._largeScreenChanged(that.largescreen);
-        that.windowResize();
       },
 
       windowResize: function () {
@@ -172,10 +130,16 @@
         if (isNaN(wNew)) {
           wNew = w;
         }
+
         if (w >= wNew) {
           if (wNew > 0) {
             if (that.oldnewsperpage == 0) {
               that.oldnewsperpage = Math.floor(w / wNew);
+              if (that.dataread) {
+                if (that.dataread.length < that.oldnewsperpage) {
+                  that.oldnewsperpage = that.dataread.length;
+                }
+              }
               if (that.oldnewsperpage == 0) {
                 that.oldnewsperpage = 1;
               }
@@ -189,11 +153,20 @@
               }
               else {
                 that.newsperpage = Math.floor(w / wNew);
+                if (that.dataread) {
+                  if (that.dataread.length < that.newsperpage) {
+                    that.newsperpage = that.dataread.length;
+                  }
+                }
               }
               wNews = that.newsperpage * wNew;
             }
             if (wNews > 0) {
-              that.lastindex = Math.ceil(that.bodies.length / that.newsperpage) - 1;
+              if (that.dataread) {
+                if (that.dataread.length > 0) {
+                  that.lastindex = Math.ceil(that.dataread.length / that.newsperpage) - 1;
+                }
+              }
               that.width = wNews;
             }
           }
@@ -206,7 +179,6 @@
         var wNews = 0;
         var newIndex = 0;
 
-        /*wNew = Number(that.getComputedStyleValue('--truc-truc')) + Number(that.getComputedStyleValue('--vc-news-list-margin-left')) + 2 * Number(that.getComputedStyleValue('--news-content-border'));*/
         newIndex = Math.floor(that.index * that.oldnewsperpage / that.newsperpage);
         that.transformparamto = newValue * newIndex;
         if (!((that.oldnewsperpage == that.newsperpage) && (that.index == newIndex))) {

@@ -19,7 +19,8 @@
     "vaadin-icons": "vaadin/vaadin-icons#^2.0.0",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5",
     "iron-image": "PolymerElements/iron-image#^1.2.5",
-    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4",
+    "polymerfire": "firebase/polymerfire#^0.10.3"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

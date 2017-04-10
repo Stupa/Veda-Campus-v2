@@ -14,8 +14,7 @@
       --vc-header-responsive-width: 720px;
       --vc-desc-p-color: var(--vc-header-p-color);
       --vc-desc-a-color: var(--vc-header-a-color);
-    } 
-
+    }
     
     .bottomdiv {
       margin-bottom: var(--vc-header-bottomdiv-margin-bottom, '');
@@ -42,12 +41,12 @@
 
     <div id="mainDiv" class$="{{mainDivClass}}">
       <div class="bottomdiv">
-        <template is="dom-if" if="{{lbl}}">
+        <template is="dom-if" if="[[lbl]]">
           <div>
             <h8>[[lbl]]</h8>
           </div>
         </template>
-        <template is="dom-if" if="{{desc}}">
+        <template is="dom-if" if="[[desc]]">
           <div>
             <vc-desc desc="[[desc]]"></vc-desc>
           </div>
@@ -67,38 +66,25 @@
       properties: {
         lbl: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: "",
           observer: '_setInitMarginBottom'
         },
         desc: {
           type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: "",
           observer: '_setInitMarginBottom'
         },
         endcap: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
+          type: Boolean
         },
         nocontent: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: false,
           observer: '_setInitMarginBottom'
         },
         params: {
           type: Array,
-          value: [],
           observer: '_setInitParams'
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
           observer: '_largeScreenChanged'
         }
       },
@@ -109,12 +95,14 @@
       _largeScreenChanged: function (newValue) {
         var that = this;
         var marginMain = "";
-        for (let param of that.params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          marginMain = newValue ? "p-1 m-l-1" : "m-l-2 p-4";
+          that.mainDivClass = "layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright" + " " + marginMain;
+          that.updateStyles();
         }
-        marginMain = newValue ? "p-1 m-l-1" : "m-l-2 p-4";
-        that.mainDivClass = "layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright" + " " + marginMain;
-        that.updateStyles();
       },
 
       _setInitParams: function () {

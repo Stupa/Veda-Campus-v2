@@ -31,19 +31,19 @@
     
     #arrow {
       position: absolute;
+      top: 64px;
     }
     
     .titleText {
       height: 0.75em;
       width: 1em;
       color: var(--primary-color-text);
-      /*background-color: var(--primary-color-dark);*/
     }
   </style>
   <template>
 
     <div class="mainDiv">
-      <template is="dom-if" if="{{showheader}}">
+      <template is="dom-if" if="[[showheader]]">
         <div id="mainBar" class="layout vertical center-justified">
           <div class="layout horizontal start-justified titleText bk-default p-0-5">
           </div>
@@ -62,59 +62,36 @@
       properties: {
         move: {
           type: Boolean,
-          value: false,
-          notify: true,
-          reflectToAttribute: true
+          notify: true
         },
         src: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: String
         },
         showheader: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true
-        },
-        tapfunct: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: Boolean
         },
         index: {
           type: Number,
           notify: true,
-          reflectToAttribute: true,
           observer: "_show"
         },
         hideindex: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
-          value: -1
+          observer: "_show"
         },
         next: {
-          type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          value: false
+          type: Boolean
         },
         transformparamfrom: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
+          notify: true
         },
         transformparamto: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
+          notify: true
         },
         width: {
-          type: Number,
-          notify: true,
-          reflectToAttribute: true
+          type: Number
         }
       },
 
@@ -128,13 +105,6 @@
       },
 
       windowResize: function () {
-        this.setClass();
-      },
-
-      setClass: function () {
-        var that = this;
-        h = 64;
-        that.$.arrow.style.top = h + "px";
       },
 
       arrowTap: function (e) {

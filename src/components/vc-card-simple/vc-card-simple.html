@@ -5,6 +5,7 @@
 
 
 <dom-module id="vc-card-simple">
+
   <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
      :host {
       display: block;
@@ -33,6 +34,7 @@
       opacity: 1;
     }
   </style>
+
   <template>
 
     <div id="imageContainer" class="card image p-0">
@@ -52,25 +54,19 @@
       properties: {
         params: {
           type: Array,
-          value: [],
           observer: '_setInitParams'
         },
         paramssmaller: {
           type: Array,
-          value: [],
           observer: '_setInitParams'
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChanged'
+          observer: '_largescreenChanged'
         },
         largescreensmaller: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChangedSmaller'
+          observer: '_largescreensmallerChanged'
         },
       },
 
@@ -97,7 +93,7 @@
         throw new Error('Bad Hex');
       },
 
-      _largeScreenChangedSmaller: function (newValue) {
+      _largescreensmallerChanged: function (newValue) {
         var that = this;
         that._largeScreenChangedParams(newValue, that.paramssmaller);
         if (!newValue && !that.largescreen) {
@@ -105,17 +101,19 @@
         }
       },
 
-      _largeScreenChanged: function (newValue) {
+      _largescreenChanged: function (newValue) {
         var that = this;
         that._largeScreenChangedParams(newValue, that.params);
       },
 
       _largeScreenChangedParams: function (newValue, params) {
         var that = this;
-        for (let param of params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (params) {
+          for (let param of params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          that.updateStyles();
         }
-        that.updateStyles();
       },
 
       attached: function () {
@@ -155,4 +153,5 @@
       },
     });
   </script>
+
 </dom-module>

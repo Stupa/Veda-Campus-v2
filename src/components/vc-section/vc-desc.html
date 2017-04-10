@@ -4,6 +4,7 @@
 
 <dom-module id="vc-desc">
   <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
+
      :host {
       display: block;
       /*--vc-header-max-width: 1344px;
@@ -48,35 +49,36 @@
     a:active {
       color: var(--vc-desc-a-color);
     }
+
   </style>
+
   <template>
 
-
     <p>
-      <template is="dom-repeat" items="{{desc}}">
-        <template is="dom-if" if="{{item.txt}}">
+      <template is="dom-repeat" items="[[desc]]">
+        <template is="dom-if" if="[[item.txt]]">
           [[item.txt]]
         </template>
-        <template is="dom-if" if="{{item.link}}">
+        <template is="dom-if" if="[[item.link]]">
           <a href="[[item.link.href]]">[[item.link.txt]]</a>
         </template>
       </template>
     </p>
 
-
   </template>
+
   <script>
+
     Polymer({
       is: 'vc-desc',
       properties: {
         desc: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: ""
+          type: Array
         }
       }
 
     });
+
   </script>
+  
 </dom-module>

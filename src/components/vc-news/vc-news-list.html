@@ -16,19 +16,11 @@
   <template>
 
     <div id="news" class="transparentToolbar horizontal layout left-justified containerPercent">
-
-
-
-      <template is="dom-repeat" items="[[types]]" as="type">
-        <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIs(type)}}">
+      <template is="dom-repeat" items="[[dataread]]" as="data">
           <vc-news-header>
-            <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIs(type)}}">
-              <vc-news-body src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" align="vertical"></vc-news-body>
-            </template>
+              <vc-news-body src="[[data.src]]" lbl="[[data.lbl]]" desc="[[data.desc]]"></vc-news-body>
           </vc-news-header>
-        </template>
-      </template>
-
+      </template>      
     </div>
 
   </template>
@@ -37,28 +29,11 @@
     Polymer({
       is: 'vc-news-list',
       properties: {
-        types: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true
-        },
-        headers: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true
-        },
-        bodies: {
-          type: Array,
-          value: [],
-          notify: true,
-          reflectToAttribute: true
+        dataread: {
+          type: Object
         },
         width: {
           type: Number,
-          notify: true,
-          reflectToAttribute: true,
           observer: "_widthChanged"
         }
       },
@@ -83,5 +58,9 @@
       }
 
     });
+  
   </script>
 </dom-module>
+
+
+

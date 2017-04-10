@@ -107,36 +107,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       is: 'vc-contact',
       properties: {
         params: {
-          type: Array,
-          value: []
+          type: Array
         },
         paramssmaller: {
-          type: Array,
-          value: []
+          type: Array
         },
         vccardsimpleparams: {
-          type: Array,
-          value: []
+          type: Array
         },
         vccardsimpleparamssmaller: {
-          type: Array,
-          value: []
+          type: Array
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChanged'
+          observer: '_largescreenChanged'
         },
         largescreensmaller: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
-          observer: '_largeScreenChangedSmaller'
+          observer: '_largescreensmallerChanged'
         },
       },
 
-      _largeScreenChangedSmaller: function (newValue) {
+      _largescreensmallerChanged: function (newValue) {
         var that = this;
         that._largeScreenChangedParams(newValue, that.paramssmaller);
         if (!newValue && !that.largescreen) {
@@ -144,17 +136,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
-      _largeScreenChanged: function (newValue) {
+      _largescreenChanged: function (newValue) {
         var that = this;
         that._largeScreenChangedParams(newValue, that.params);
       },
 
       _largeScreenChangedParams: function (newValue, params) {
         var that = this;
-        for (let param of params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (params) {
+          for (let param of params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          that.updateStyles();
         }
-        that.updateStyles();
       },
 
       windowResize: function () {
@@ -191,6 +185,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           { name: '--vc-contact-smalltext-width', largeValue: '360px', smallValue: '320px' }
         ];
         that.paramssmaller = [
+          { name: '--vc-contact-h1-font-size', largeValue: '1.1em', smallValue: '1.1em' },
+          { name: '--vc-contact-h6-font-size', largeValue: '0.7em', smallValue: '0.7em' },
+          { name: '--vc-contact-h7-font-size', largeValue: '1.5em', smallValue: '1.5em' },
+          { name: '--vc-contact-p-font-size', largeValue: '0.9', smallValue: '0.9em' },
           { name: '--vc-contact-smalltext-width', largeValue: '320px', smallValue: '256px' }
         ];
         that.vccardsimpleparams = [
@@ -206,7 +204,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           { name: '--vc-card-simple-padding-right', largeValue: '2em', smallValue: '2em' },
           { name: '--vc-card-simple-padding-top', largeValue: '2em', smallValue: '2em' },
           { name: '--vc-card-simple-padding-bottom', largeValue: '2em', smallValue: '2em' }
-
         ];
       },
     });

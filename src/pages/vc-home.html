@@ -37,34 +37,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <vc-home-header></vc-home-header>
 
-    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('desc')}}">
+    <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('desc')}}">
       <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
-        <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('desc')}}">
+        <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('desc')}}">
           <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
         </template>
       </vc-header>
     </template>
 
-    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('domain')}}">
+    <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('domain')}}">
       <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
         <vc-card-simple>
-          <vc-home-map-image places="{{places}}"></vc-home-map-image>
+          <vc-home-map-image places="[[places]]"></vc-home-map-image>
         </vc-card-simple>
       </vc-header>
     </template>
 
-    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('commitments')}}">
+    <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('commitments')}}">
       <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
-        <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('commitments')}}">
+        <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('commitments')}}">
           <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
         </template>
       </vc-header>
     </template>
 
-    <template is="dom-repeat" items="{{headers}}" as="header" filter="{{_headersIsDesc('participation')}}">
+    <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('participation')}}">
       <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
         <div class="horizontal layout justified wrap container">
-          <template is="dom-repeat" items="{{bodies}}" as="body" filter="{{_bodiesIsDesc('participation')}}">
+          <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('participation')}}">
             <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
           </template>
         </div>
@@ -80,29 +80,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       is: 'vc-home',
       properties: {
         types: {
-          type: Array,
-          value: []
+          type: Array
         },
         headers: {
-          type: Array,
-          value: []
+          type: Array
         },
         bodies: {
-          type: Array,
-          value: []
+          type: Array
         },
         places: {
-          type: Array,
-          value: []
+          type: Array
         },
         params: {
-          type: Array,
-          value: []
+          type: Array
         },
         largescreen: {
           type: Boolean,
-          notify: true,
-          reflectToAttribute: true,
           observer: '_largeScreenChanged'
         }
       },
@@ -123,10 +116,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _largeScreenChanged: function (newValue) {
         var that = this;
-        for (let param of that.params) {
-          that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+          }
+          that.updateStyles();
         }
-        that.updateStyles();
       },
 
       windowResize: function () {
@@ -202,7 +197,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           {
             type: this.types[2].lbl, lbl: "Notre milieu de travail", src: this.resolveUrl("../images/home_commitments_01.jpeg"), desc: [
               { txt: "Veda Campus est destiné à être un lieu de vie et de travail pour son équipe. Nous apportons un soin tout particulier à l'organisation, l'optimisation de la communication, la compréhension et l'efficacité. Vision partagée et des efforts de collaboration sont les pierres angulaires de la façon dont nous travaillons ensemble. Dès l'ouverture du domaine, nous nous engagerons dans l'obtention du label Lucie (norme ISO 26000), label de référence en Responsabilité Sociétale des Entreprises : Protection du Consommateur, Environnement, Bonnes Pratiques des Affaires, Relations et Conditions de Travail, Droits de l'Homme, Contribution au Développement Local, Gouvernance de l'Entreprise. (" },
-              { link: { href: "www.labellucie.com", txt: "www.labellucie.com" } },
+              { link: { href: "http://www.labellucie.com", txt: "www.labellucie.com" } },
               { txt: ")" }
             ]
           },
@@ -246,16 +241,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
         ];
         that.places = [
-          { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", topsmall: "67.89%", leftsmall: "84.2%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
-          { src: this.resolveUrl("../images/home_map_01"), icon: "vc-icons3:spastroke", topsmall: "82.25%", leftsmall: "1.74%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des yaourts suédois en fixant un caillou." },
-          { src: this.resolveUrl("../images/home_map_02"), icon: "vc-icons3:spastroke", topsmall: "45.69%", leftsmall: "1.74%", desc: "Le bois des bambous" },
-          { src: this.resolveUrl("../images/home_map_03"), icon: "vc-icons:home2", topsmall: "39.16%", leftsmall: "56.42%", desc: "Les chalets asiatiques où qu'on peut manger des nems. C'est bon les nems." },
-          { src: this.resolveUrl("../images/home_map_04"), icon: "vc-icons:group", topsmall: "60.05%", leftsmall: "39.06%", desc: "La yourte dojo. (sans les poules)... Mais bon, je préfèrais quand même avec les poules, ça faisait plus roots. Et c'était plus net parce que là, autant j'ai bien refait les chalets en virant la montagne enneigée, autant là c'est dégueulasse ! Ceci dit, ça fait un gros texte de test qui en plus cache la misère. ^^" },
-          { src: this.resolveUrl("../images/home_map_05"), icon: "vc-icons:group", topsmall: "20.89%", leftsmall: "53.82%", desc: "Le dojo du ciel" },
-          { src: this.resolveUrl("../images/home_map_06"), icon: "vc-icons3:spastroke", topsmall: "23.5%", leftsmall: "3.47%", desc: "Les ruches du domaine" },
-          { src: this.resolveUrl("../images/home_map_07"), icon: "vc-icons:home2", topsmall: "39.16%", leftsmall: "86.81%", desc: "Stone tipi" },
-          { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons3:spastroke", topsmall: "65.93%", leftsmall: "62.5%", desc: "Spa time" },
-          { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", topsmall: "39.16%", leftsmall: "28.65%", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
+          { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", top: "67.89%", left: "84.2%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
+          { src: this.resolveUrl("../images/home_map_01"), icon: "vc-icons3:spastroke", top: "82.25%", left: "1.74%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des yaourts suédois en fixant un caillou." },
+          { src: this.resolveUrl("../images/home_map_02"), icon: "vc-icons3:spastroke", top: "45.69%", left: "1.74%", desc: "Le bois des bambous" },
+          { src: this.resolveUrl("../images/home_map_03"), icon: "vc-icons:home2", top: "39.16%", left: "56.42%", desc: "Les chalets asiatiques où qu'on peut manger des nems. C'est bon les nems." },
+          { src: this.resolveUrl("../images/home_map_04"), icon: "vc-icons:group", top: "60.05%", left: "39.06%", desc: "La yourte dojo. (sans les poules)... Mais bon, je préfèrais quand même avec les poules, ça faisait plus roots. Et c'était plus net parce que là, autant j'ai bien refait les chalets en virant la montagne enneigée, autant là c'est dégueulasse ! Ceci dit, ça fait un gros texte de test qui en plus cache la misère. ^^" },
+          { src: this.resolveUrl("../images/home_map_05"), icon: "vc-icons:group", top: "20.89%", left: "53.82%", desc: "Le dojo du ciel" },
+          { src: this.resolveUrl("../images/home_map_06"), icon: "vc-icons3:spastroke", top: "23.5%", left: "3.47%", desc: "Les ruches du domaine" },
+          { src: this.resolveUrl("../images/home_map_07"), icon: "vc-icons:home2", top: "39.16%", left: "86.81%", desc: "Stone tipi" },
+          { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons3:spastroke", top: "65.93%", left: "62.5%", desc: "Spa time" },
+          { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", top: "39.16%", left: "28.65%", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
         ];
         that.params = [
           { name: '--vc-card-simple-margin', largeValue: '0em', smallValue: '0em' },
