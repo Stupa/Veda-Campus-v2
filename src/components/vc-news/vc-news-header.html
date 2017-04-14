@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../vc-query/vc-query.html">
 
 
 <dom-module id="vc-news-header">
@@ -10,7 +11,7 @@
       display: block;
       min-width: var(--vc-news-header-min-width);
       --news-content-border: 1px;
-    }   
+    }
     
     .titleText {
       color: var(--primary-color-text);
@@ -18,7 +19,7 @@
     
     #mainDiv {
       border-width: var(--news-content-border, 0);
-      margin-left: var(--vc-news-list-margin-left, 0);
+      margin-left: var(--vc-news-header-margin-left, 0);
       border-top-width: 0;
     }
   </style>
@@ -40,6 +41,9 @@
       </div>
     </div>
 
+    <vc-query responsivewidthparam="[[responsivewidthparam]]" largescreen="{{largescreen}}" narrow="[[narrow]]"></vc-query>
+
+
   </template>
 
   <script>
@@ -54,6 +58,37 @@
           type: String,
           value: "layout vertical start-justified bc-default whiteToolbarBody p-0 m-0"
         },
+        responsivewidthparam: {
+          type: String
+        },
+        params: {
+          type: Array,
+          observer: '_paramsChanged'
+        },
+        largescreen: {
+          type: Boolean,
+          observer: '_largeScreenChanged'
+        },
+        narrow: {
+          type: Boolean
+        }
+      },
+
+      _paramsChanged: function (newValue) {
+        var that = this;
+        if (newValue) {
+          that._largeScreenChanged(that.largescreen);
+        }
+      },
+
+      _largeScreenChanged: function (newValue) {
+        var that = this;
+        if (that.params) {
+          for (let param of that.params) {
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
+          }
+          that.updateStyles();
+        }
       },
 
       _onHovered: function (event) {

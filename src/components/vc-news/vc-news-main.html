@@ -1,17 +1,16 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../vc-query/vc-query.html">
 <link rel="import" href="vc-news-header-arrow.html">
 <link rel="import" href="vc-news-animation-container.html">
 <link rel="import" href="vc-news-list.html">
-<link rel="import" href="../vc-query/vc-query.html">
 
 <dom-module id="vc-news-main">
   <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
      :host {
       display: block;
-      --vc-news-responsive-width: 416px;
+      /*--vc-news-responsive-width: 416px;*/
     }
     
     .containerPercent {
@@ -29,7 +28,8 @@
 
       <div class="transparentToolbar horizontal layout left-justified containerPercent">
         <vc-news-animation-container transformparamfrom="{{transformparamfrom}}" transformparamto="{{transformparamto}}" move="{{move}}">
-          <vc-news-list dataread="[[dataread]]" width="[[width]]"></vc-news-list>
+          <vc-news-list dataread="[[dataread]]" width="[[width]]" responsivewidthparam="[[responsivewidthparam]]" narrow="[[narrow]]"
+            params="[[vcnewslistparams]]"></vc-news-list>
         </vc-news-animation-container>
       </div>
 
@@ -38,7 +38,7 @@
 
     </div>
 
-    <vc-query responsivewidthparam='--vc-news-responsive-width' largescreen="{{largescreen}}" narrow="[[narrow]]"></vc-query>
+    <vc-query responsivewidthparam="[[responsivewidthparam]]" largescreen="{{largescreen}}" narrow="[[narrow]]"></vc-query>
 
   </template>
 
@@ -77,7 +77,17 @@
         move: {
           type: Boolean
         },
+        responsivewidthparam: {
+          type: String
+        },
         params: {
+          type: Array,
+          observer: '_paramsChanged'
+        },
+        vcnewslistparams: {
+          type: Array
+        },
+        vcnewsmainparams: {
           type: Array
         },
         largescreen: {
@@ -98,11 +108,29 @@
         that.windowResize();
       },
 
+      _paramsChanged: function (newValue) {
+        var that = this;
+        var vcNewsListCheckParams = [];
+        var vcNewsMainCheckParams = [];
+        var newParam = {};
+        if (newValue) {
+          for (let param of newValue) {
+            newParam = { name: param.name };
+            vcNewsListCheckParams.push(newParam);
+          }
+          newParam = { name: '--vc-news-main-min-width' };
+          vcNewsMainCheckParams.push(newParam);
+          that.vcnewslistparams = that.setParams(vcNewsListCheckParams, 'vc-news-list');
+          that.vcnewsmainparams = that.setParams(vcNewsMainCheckParams, '');
+          that._largeScreenChanged(that.largescreen);
+        }
+      },
+
       _largeScreenChanged: function (newValue) {
         var that = this;
-        if (that.params) {
-          for (let param of that.params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if (that.vcnewsmainparams) {
+          for (let param of that.vcnewsmainparams) {
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
           }
           that.updateStyles();
         }
@@ -111,7 +139,30 @@
       attached: function () {
         var that = this;
         that.index = 0;
-        that._largeScreenChanged(that.largescreen);
+      },
+
+      setParams: function (checkParams, renameParam) {
+        var that = this;
+        var newName = '';
+        var newParam = {};
+        var newParams = [];
+        if (that.params) {
+          for (let param of that.params) {
+            for (let checkParam of checkParams) {
+              if (param.name == checkParam.name) {
+                if (renameParam) {
+                  newName = param.name.replace('vc-news-main', renameParam);
+                }
+                else {
+                  newName = param.name;
+                }
+                newParam = { name: newName, largevalue: param.largevalue, smallvalue: param.smallvalue };
+                newParams.push(newParam);
+              }
+            }
+          }
+        }
+        return newParams;
       },
 
       windowResize: function () {
@@ -125,15 +176,14 @@
         previousWidth = Number(window.getComputedStyle(that.$.previous, null).getPropertyValue('width').replace('px', ''));
         nextWidth = Number(window.getComputedStyle(that.$.next, null).getPropertyValue('width').replace('px', ''));
         w = that.pagewidth - (previousWidth + nextWidth);
-        wNew = Number(that.getComputedStyleValue('--vc-news-header-min-width').replace('px', ''));
-
+        wNew = Number(that.getComputedStyleValue('--vc-news-main-min-width').replace('px', ''));
         if (isNaN(wNew)) {
           wNew = w;
         }
 
         if (w >= wNew) {
           if (wNew > 0) {
-            if (that.oldnewsperpage == 0) {
+            if (!that.oldnewsperpage) {
               that.oldnewsperpage = Math.floor(w / wNew);
               if (that.dataread) {
                 if (that.dataread.length < that.oldnewsperpage) {
@@ -147,8 +197,9 @@
             else {
               that.oldnewsperpage = that.newsperpage;
             }
+
             if (wNew > 0) {
-              if (that.newsperpage == 0) {
+              if (!that.newsperpage) {
                 that.newsperpage = 1;
               }
               else {
@@ -180,6 +231,7 @@
         var newIndex = 0;
 
         newIndex = Math.floor(that.index * that.oldnewsperpage / that.newsperpage);
+
         that.transformparamto = newValue * newIndex;
         if (!((that.oldnewsperpage == that.newsperpage) && (that.index == newIndex))) {
           that.transformparamfrom = oldValue * that.index;
@@ -202,10 +254,8 @@
         if (that.width == "") {
           that.width.width = "0px";
         }
-        that.params = [
-          { name: '--vc-news-header-min-width', largeValue: '352px', smallValue: '100%' },
-          { name: '--vc-news-list-margin-left', largeValue: '32px', smallValue: '0' }
-        ];
+        that.responsivewidthparam = that.getComputedStyleValue('--vc-news-main-responsive-width');
+        that.updateStyles();
       },
 
     });

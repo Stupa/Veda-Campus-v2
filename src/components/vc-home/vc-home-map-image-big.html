@@ -11,7 +11,7 @@
       z-index: 2;
       min-width: 100%;
       height: 40%;
-      --vc-home-map-image-responsive-width: 1024px;
+      /*--vc-home-map-image-responsive-width: 1024px;*/
     }
     
     .containerPercent {
@@ -63,7 +63,8 @@
       </div>
     </div>
 
-    <vc-query responsivewidthparam='--vc-home-map-image-responsive-width' largescreen="{{largescreen}}"></vc-query>
+    <!--<vc-query responsivewidthparam='--vc-home-map-image-responsive-width' largescreen="{{largescreen}}"></vc-query>-->
+    <vc-query responsivewidthparam="[[responsivewidthparam]]" largescreen="{{largescreen}}"></vc-query>
 
   </template>
 
@@ -94,6 +95,10 @@
         largescreen: {
           type: Boolean,
           observer: '_largescreenChanged'
+        },
+        responsivewidthparam: {
+          type: String,
+          value: '1024px'
         }
       },
 
@@ -145,7 +150,7 @@
         var that = this;
         if (that.params) {
           for (let param of that.params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
           }
           that.updateStyles();
         }
@@ -159,7 +164,7 @@
       ready: function () {
         var that = this;
         that.params = [
-          { name: '--vc-home-map-image-font-size', largeValue: '0.9em', smallValue: '0.7em' }
+          { name: '--vc-home-map-image-font-size', largevalue: '0.9em', smallvalue: '0.7em' }
         ];
       },
 

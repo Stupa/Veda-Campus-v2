@@ -3,7 +3,7 @@
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../vc-icons.html">
+<link rel="import" href="../../components/vc-icons/vc-icons.html">
 <link rel="import" href="../../components/vc-query/vc-query.html">
 <link rel="import" href="vc-desc.html">
 
@@ -11,10 +11,17 @@
   <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
      :host {
       display: block;
-      --vc-body-responsive-width: 720px;
-      --vc-body-responsive-icon-width: 251px;
+      /*--vc-body-responsive-width: 720px;
+      --vc-body-icon-responsive-width: 251px;*/
+      /*DOES NOT WORK IF NOT SET BY VALUE IN HOST - Not set at init*/
+      /*--vc-body-query-responsive-width: var(--vc-body-responsive-width);
+      --vc-body-query-icon-responsive-width: var(--vc-body-icon-responsive-width);*/
       --vc-desc-p-color: var(--vc-body-p-color);
       --vc-desc-a-color: var(--vc-body-a-color);
+      max-width: var(--vc-body-max-width, '');
+      min-width: var(--vc-body-min-width, '');
+      /*min-width: 352px;*/
+      padding-left: var(--vc-body-margin-left);
     }
     
     .containerPercent {
@@ -36,15 +43,15 @@
     }
     
     .imageWidth {
-      width: var(--vc-body-fullwidth);
+      width: var(--vc-body-image-width);
     }
     
     img,
     iron-image {
       display: block;
-      width: var(--vc-body-fullwidth, '');
-      max-width: var(--vc-body-max-width, '');
-      --iron-image-width: var(--vc-body-fullwidth, '');
+      width: var(--vc-body-image-width, '');
+      max-width: var(--vc-body-image-max-width, '');
+      --iron-image-width: var(--vc-body-image-width, '');
     }
     
     .vcStaffCircle {
@@ -122,9 +129,12 @@
 
     </div>
 
-    <vc-query responsivewidthparam='--vc-body-responsive-width' largescreen="{{largescreen}}"></vc-query>
-    <vc-query responsivewidthparam='--vc-body-responsive-icon-width' largescreen="{{largescreenicon}}"></vc-query>
+    <!--<vc-query responsivewidthparam='--vc-body-query-responsive-width' largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam='--vc-body-query-icon-responsive-width' largescreen="{{largescreenicon}}"></vc-query>-->
 
+    <template is="dom-repeat" items="{{paramslist}}" as="params">
+      <vc-query responsivewidthparam="[[params.responsivewith]]" largescreen="{{params.largescreen}}" narrow="[[narrow]]"></vc-query>
+    </template>
 
   </template>
 
@@ -167,53 +177,192 @@
           type: Boolean
         },
         params: {
-          type: Array
+          type: Array,
+          /*observer: '_paramsChanged'*/
         },
-        paramsicon: {
-          type: Array
+        paramslist: {
+          type: Array,
+          notify: true
+          /*observer: '_largescreenChanged'*/
         },
         largescreen: {
-          type: Boolean,
-          observer: '_largescreenChanged'
+          type: Array,
+          /*observer: '_largescreenChanged'*/
         },
-        largescreenicon: {
-          type: Boolean,
-          observer: '_largescreeniconChanged'
+        responsivewidthparam: {
+          type: String
+        },
+        scrollbar: {
+          type: Boolean
+        },
+        widthdelta: {
+          type: Number
+        },
+        narrow: {
+          type: Boolean
         }
+      },
+
+      observers: [
+        '_largescreenChanged(paramslist.*)',
+        '_paramsChanged(params, scrollbar, widthdelta)'
+      ],
+
+      getScrollbarWidth: function () {
+        var outer = document.createElement("div");
+        outer.style.visibility = "hidden";
+        outer.style.width = "100px";
+        outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+        document.body.appendChild(outer);
+
+        var widthNoScroll = outer.offsetWidth;
+        // force scrollbars
+        outer.style.overflow = "scroll";
+
+        // add innerdiv
+        var inner = document.createElement("div");
+        inner.style.width = "100%";
+        outer.appendChild(inner);
+
+        var widthWithScroll = inner.offsetWidth;
+
+        // remove divs
+        outer.parentNode.removeChild(outer);
+
+        return widthNoScroll - widthWithScroll;
+      },
+
+      _paramsChanged: function () {
+        var that = this;
+        var largeValueParam = '';
+        var responsiveWidth = 0;
+        var smallValue = '';
+        var largeValue = '';
+        var largeValueNumber = 0;
+        var paramsList = [];
+        var tempParams = [];
+        var tempParam = {};
+        var icon;
+        var marginleft;
+        var i = 1;
+        var j = 0;
+        var responsiveWidthParam = 0;
+        var split = false;
+        var minwidth;
+        var scrollbarWidth = that.getScrollbarWidth();
+
+
+        if (that.params) {
+          for (let param of that.params) {
+            if (param.name == '--vc-body-max-width') {
+              split = true;
+              largeValueParam = Number(param.largevalue.replace("px", ''));
+            }
+            if (param.name == '--vc-body-margin-left') {
+              split = true;
+              marginLeftParam = [Number(param.smallvalue.replace("px", '')), Number(param.largevalue.replace("px", ''))];
+            }
+          }
+
+
+          if (split) {
+            responsiveWidthParam = Number(that.getComputedStyleValue('--vc-body-max-width').replace("px", ''));
+            while (responsiveWidth < responsiveWidthParam) {
+              if (i == 1) {
+                responsiveWidth = i * (marginLeftParam[0] + largeValueParam) + that.widthdelta[0] - marginLeftParam[0];
+                if (that.scrollbar) {
+                  responsiveWidth = responsiveWidth + scrollbarWidth;
+                }
+                smallValue = '100%';
+                for (let paramIconSize of that.params) {
+                  if (paramIconSize.name == '--vc-body-iron-icon-size') {
+                    icon = paramIconSize;
+                  }
+                  if (paramIconSize.name == '--vc-body-margin-left') {
+                    marginleft = paramIconSize;
+                  }
+                  minwidth = { name: '--vc-body-min-width', largevalue: largeValueParam + 'px', smallvalue: '90%' };
+                }
+                largeValueNumber = (largeValueParam + marginLeftParam[1]) * (i + 1);
+              }
+              else {
+                responsiveWidth = i * (marginLeftParam[1] + largeValueParam) + that.widthdelta[1] - marginLeftParam[1];
+                if (that.scrollbar) {
+                  responsiveWidth = responsiveWidth + scrollbarWidth;
+                }
+                smallValue = largeValue;
+                largeValueNumber = (largeValueParam + marginLeftParam[1]) * (i + 1) / i;
+              }
+
+              largeValue = largeValueNumber + "px";
+              j = i - 1;
+              if (i == 1) {
+                paramsList[j] = { responsivewith: responsiveWidth + 'px', params: [{ name: '--vc-body-max-width', largevalue: largeValue, smallvalue: smallValue }, icon, marginleft, minwidth] };
+              }
+              else {
+                paramsList[j] = { responsivewith: responsiveWidth + 'px', params: [{ name: '--vc-body-max-width', largevalue: largeValue, smallvalue: smallValue }] };
+
+              }
+              i++;
+            }
+          }
+          else {
+            responsiveWidth = that.responsivewidthparam;
+            paramsList[0] = { responsivewith: responsiveWidth, params: that.params };
+          }
+          if (paramsList.length > 0) {
+            that.paramslist = paramsList;
+          }
+        }
+      },
+
+
+      checkIfTrueBefore: function (index) {
+        var that = this;
+        if (index == 0) return false;
+        if ((index >= 0) && (that.paramslist[index - 1].largescreen == true)) return true;
+        else return false;
       },
 
       _largescreenChanged: function (newValue) {
         var that = this;
         var margin = "";
-        if (that.margin) {
-          margin = newValue ? margin + "p-1" : margin + "p-4";
-        }
-        else {
-          margin = newValue ? margin + "m-b-2" : margin + "m-b-1";
-        }
-        if (that.params) {
-          for (let param of that.params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
-          }
-        }
-        that.align = (newValue && ((that.icon == "") || (that.icon == undefined))) ? 'vertical' : 'horizontal';
-        that.mainDivClass = "containerPercent layout start-justified" + " " + that.align + " " + margin;
-        that.style.maxWidth = (((that.icon == "") || (that.icon == undefined)) || newValue) ? "100%" : "352px"
-        that.updateStyles();
-      },
+        var items;
+        var value;
+        var index = newValue.path.split(".")[1];
 
-      _largescreeniconChanged: function (newValue) {
-        var that = this;
-        if (that.paramsicon) {
-          for (let param of that.paramsicon) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        if ((index)) {
+          index = Number(index.replace('#', ''));
+          value = this.get(newValue.path);
+          items = that.paramslist[index].params;
+
+          if (index == 0) {
+            if (that.margin) {
+              margin = value ? margin + "p-1" : margin + "p-4";
+            }
+            else {
+              margin = value ? margin + "m-b-2" : margin + "m-b-1";
+            }
+
+            that.align = (value && ((that.icon == "") || (that.icon == undefined))) ? 'vertical' : 'horizontal';
+            that.mainDivClass = "containerPercent layout start-justified" + " " + that.align + " " + margin;
+            that.spaceClass = value ? "m-l-1" : "m-l-2";
           }
+
+          if (!that.checkIfTrueBefore(index)) {
+            for (let item of items) {
+              that.customStyle[item.name] = value ? item.smallvalue : item.largevalue;
+            }
+          }
+
+          that.updateStyles();
         }
-        that.spaceClass = newValue ? "m-l-1" : "m-l-2";
-        that.updateStyles();
       },
 
       windowResize: function () {
+        var that = this;
+        /*that._paramsChanged();*/
       },
 
       _space: function () {
@@ -222,12 +371,12 @@
 
       attached: function () {
         var that = this;
-        that._largescreenChanged(that.largescreen);
-        that._largescreeniconChanged(that.largescreenicon);
+        that._paramsChanged();
       },
 
       ready: function () {
         var that = this;
+
         if (document.readyState != 'loading') {
           /*this.domReady();*/
         } else {
@@ -238,13 +387,6 @@
           that.width.width = "0px";
         }
         that.windowResize();
-        that.params = [
-          { name: '--vc-body-fullwidth', largeValue: '', smallValue: '100%' },
-          { name: '--vc-body-max-width', largeValue: '256px', smallValue: '336px' }
-        ];
-        that.paramsicon = [
-          { name: '--vc-body-iron-icon-size', largeValue: '64px', smallValue: '32px' }
-        ];
       }
 
     });

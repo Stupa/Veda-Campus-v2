@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../styles/shared-styles.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../vc-icons.html">
+<link rel="import" href="../components/vc-icons/vc-icons.html">
 <link rel="import" href="../components/vc-card-simple/vc-card-simple.html">
 <link rel="import" href="../components/vc-query/vc-query.html">
 
@@ -20,8 +20,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      :host {
       display: block;
       text-align: right;
-      --vc-contact-responsive-width: 251px;
+      --vc-contact-responsive-width: var(--vc-app-drawer-layout-responsive-width);
+      --vc-contact-smaller-responsive-width: 251px;
       --vc-card-simple-responsive-width: var(--vc-contact-responsive-width);
+      --vc-card-simple-smaller-responsive-width: var(--vc-contact-smaller-responsive-width);
       --vc-card-simple-background: url("../images/contactmapnb.png");
       --vc-card-simple-background-color: var(--secondary-color-dark);
     }
@@ -96,8 +98,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </vc-card-simple>
 
-    <vc-query largescreen="{{largescreen}}"></vc-query>
-    <vc-query responsivewidthparam='--vc-contact-responsive-width' largescreen="{{largescreensmaller}}"></vc-query>
+    <vc-query responsivewidthparam="[[responsivewidth]]" largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam="[[smallerresponsivewidth]]" largescreen="{{largescreensmaller}}"></vc-query>
 
 
   </template>
@@ -107,10 +109,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       is: 'vc-contact',
       properties: {
         params: {
-          type: Array
+          type: Array,
+          observer: '_paramsChanged'
         },
         paramssmaller: {
-          type: Array
+          type: Array,
+          observer: '_paramssmallerChanged'
         },
         vccardsimpleparams: {
           type: Array
@@ -126,6 +130,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           observer: '_largescreensmallerChanged'
         },
+        responsivewidthparam: {
+          type: String,
+          value: '720px'
+        }
+      },
+
+
+ /*     getSBLive: function () {
+        /*var d = window.document, c = d.compatMode;
+        r = c && /CSS/.test(c) ? d.documentElement : d.body;*/
+  /*      var r = this;
+        if (typeof window.innerWidth == 'number') {
+          // incredibly the next two lines serves equally to the scope
+          // I prefer the first because it resembles more the feature
+          // being detected by its functionality than by assumptions 
+          return [window.innerHeight > r.clientHeight, window.innerWidth > r.clientWidth];
+          return [window.innerWidth > r.clientWidth, window.innerHeight > r.clientHeight];
+        } else {
+          return [r.scrollWidth > r.clientWidth, r.scrollHeight > r.clientHeight];
+        }
+      },*/
+
+
+      _paramsChanged: function (newValue) {
+        var that = this;
+        that._largescreenChanged(that.largescreen);
+      },
+
+
+      _paramssmallerChanged: function (newValue) {
+        var that = this;
+        that._largescreensmallerChanged(that.largescreensmaller);
       },
 
       _largescreensmallerChanged: function (newValue) {
@@ -145,7 +181,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var that = this;
         if (params) {
           for (let param of params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
           }
           that.updateStyles();
         }
@@ -153,16 +189,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       windowResize: function () {
         var that = this;
+
+
       },
 
       attached: function () {
         var that = this;
-        if (that.largescreensmaller) {
-          that._largeScreenChangedParams(that.largescreensmaller, that.paramssmaller);
-        }
-        else {
-          that._largeScreenChangedParams(that.largescreen, that.params);
-        }
+        that.responsivewidth = that.getComputedStyleValue('--vc-contact-responsive-width');
+        that.smallerresponsivewidth = that.getComputedStyleValue('--vc-contact-smaller-responsive-width');
       },
 
       ready: function () {
@@ -178,32 +212,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         that.windowResize();
         that.params = [
-          { name: '--vc-contact-h1-font-size', largeValue: '1.3em', smallValue: '1.1em' },
-          { name: '--vc-contact-h6-font-size', largeValue: '0.9em', smallValue: '0.7em' },
-          { name: '--vc-contact-h7-font-size', largeValue: '2em', smallValue: '1.5em' },
-          { name: '--vc-contact-p-font-size', largeValue: '', smallValue: '0.9em' },
-          { name: '--vc-contact-smalltext-width', largeValue: '360px', smallValue: '320px' }
+          { name: '--vc-contact-h1-font-size', largevalue: '1.3em', smallvalue: '1.1em' },
+          { name: '--vc-contact-h6-font-size', largevalue: '0.9em', smallvalue: '0.7em' },
+          { name: '--vc-contact-h7-font-size', largevalue: '2em', smallvalue: '1.5em' },
+          { name: '--vc-contact-p-font-size', largevalue: '', smallvalue: '0.9em' },
+          { name: '--vc-contact-smalltext-width', largevalue: '360px', smallvalue: '320px' }
         ];
         that.paramssmaller = [
-          { name: '--vc-contact-h1-font-size', largeValue: '1.1em', smallValue: '1.1em' },
-          { name: '--vc-contact-h6-font-size', largeValue: '0.7em', smallValue: '0.7em' },
-          { name: '--vc-contact-h7-font-size', largeValue: '1.5em', smallValue: '1.5em' },
-          { name: '--vc-contact-p-font-size', largeValue: '0.9', smallValue: '0.9em' },
-          { name: '--vc-contact-smalltext-width', largeValue: '320px', smallValue: '256px' }
+          { name: '--vc-contact-h1-font-size', largevalue: '1.1em', smallvalue: '1.1em' },
+          { name: '--vc-contact-h6-font-size', largevalue: '0.7em', smallvalue: '0.7em' },
+          { name: '--vc-contact-h7-font-size', largevalue: '1.5em', smallvalue: '1.5em' },
+          { name: '--vc-contact-p-font-size', largevalue: '0.9', smallvalue: '0.9em' },
+          { name: '--vc-contact-smalltext-width', largevalue: '320px', smallvalue: '256px' }
         ];
         that.vccardsimpleparams = [
-          { name: '--vc-card-simple-margin', largeValue: '2em', smallValue: '1em' },
-          { name: '--vc-card-simple-padding', largeValue: '6em', smallValue: '1em' },
-          { name: '--vc-card-simple-padding-right', largeValue: '8em', smallValue: '2em' },
-          { name: '--vc-card-simple-padding-top', largeValue: '2em', smallValue: '2em' },
-          { name: '--vc-card-simple-padding-bottom', largeValue: '2em', smallValue: '2em' }
+          { name: '--vc-card-simple-margin', largevalue: '2em', smallvalue: '1em' },
+          { name: '--vc-card-simple-padding', largevalue: '6em', smallvalue: '1em' },
+          { name: '--vc-card-simple-padding-right', largevalue: '8em', smallvalue: '2em' },
+          { name: '--vc-card-simple-padding-top', largevalue: '2em', smallvalue: '2em' },
+          { name: '--vc-card-simple-padding-bottom', largevalue: '2em', smallvalue: '2em' }
         ];
         that.vccardsimpleparamssmaller = [
-          { name: '--vc-card-simple-margin', largeValue: '1em', smallValue: '1em' },
-          { name: '--vc-card-simple-padding', largeValue: '1em', smallValue: '1em' },
-          { name: '--vc-card-simple-padding-right', largeValue: '2em', smallValue: '2em' },
-          { name: '--vc-card-simple-padding-top', largeValue: '2em', smallValue: '2em' },
-          { name: '--vc-card-simple-padding-bottom', largeValue: '2em', smallValue: '2em' }
+          { name: '--vc-card-simple-margin', largevalue: '1em', smallvalue: '1em' },
+          { name: '--vc-card-simple-padding', largevalue: '1em', smallvalue: '1em' },
+          { name: '--vc-card-simple-padding-right', largevalue: '2em', smallvalue: '2em' },
+          { name: '--vc-card-simple-padding-top', largevalue: '2em', smallvalue: '2em' },
+          { name: '--vc-card-simple-padding-bottom', largevalue: '2em', smallvalue: '2em' }
         ];
       },
     });

@@ -13,65 +13,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../components/vc-section/vc-header.html">
 <link rel="import" href="../components/vc-section/vc-body.html">
+<link rel="import" href="../components/vc-card-simple/vc-card-simple.html">
+<link rel="import" href="../components/vc-section/vc-body-list.html">
 <link rel="import" href="../components/vc-home/vc-home-map-image.html">
 <link rel="import" href="../components/vc-home/vc-home-header.html">
-<link rel="import" href="../components/vc-query/vc-query.html">
 
 <dom-module id="vc-home">
   <template>
     <style include="shared-styles iron-flex iron-flex-alignment">
        :host {
         display: block;
+        --vc-header-max-width: 1344px;
+        --vc-header-p-color: var(--color-neutral-text-dark);
+        --vc-header-a-color: var(--primary-color-dark);
         --vc-card-simple-border: 5px solid var(--default-border-color);
+        --vc-card-simple-background: var(--default-border-color);
+        --vc-body-max-width: var(--vc-header-max-width);
         --vc-body-p-color: var(--color-neutral-text-dark);
         --vc-body-h-color: var(--color-neutral-text);
         --vc-body-a-color: var(--primary-color-dark);
-        --vc-header-p-color: var(--color-neutral-text-dark);
-        --vc-header-a-color: var(--primary-color-dark);
-      }
-      
-      .container {
-        height: 100%;
+        --vc-body-list-max-width: var(--vc-header-max-width);
+        --vc-body-list-p-color: var(--color-neutral-text-dark);
+        --vc-body-list-h-color: var(--color-neutral-text);
+        --vc-body-list-a-color: var(--primary-color-dark);
       }
     </style>
 
     <vc-home-header></vc-home-header>
 
     <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('desc')}}">
-      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" params="[[vcheaderparams]]">
         <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('desc')}}">
-          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
+          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" responsivewidthparam="[[bodyresponsivewidthparam]]"
+            params="[[vcbodyparams]]"></vc-body>
         </template>
       </vc-header>
     </template>
 
     <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('domain')}}">
-      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
-        <vc-card-simple>
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" params="[[vcheaderparams]]">
+        <vc-card-simple params="[[vccardsimpleparams]]">
           <vc-home-map-image places="[[places]]"></vc-home-map-image>
         </vc-card-simple>
       </vc-header>
     </template>
 
     <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('commitments')}}">
-      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" params="[[vcheaderparams]]">
         <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('commitments')}}">
-          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
+          <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]" responsivewidthparam="[[bodyresponsivewidthparam]]"
+            params="[[vcbodyparams]]"></vc-body>
         </template>
       </vc-header>
     </template>
 
     <template is="dom-repeat" items="[[headers]]" as="header" filter="{{_headersIsDesc('participation')}}">
-      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]">
-        <div class="horizontal layout justified wrap container">
-          <template is="dom-repeat" items="[[bodies]]" as="body" filter="{{_bodiesIsDesc('participation')}}">
-            <vc-body icon="[[body.icon]]" src="[[body.src]]" lbl="[[body.lbl]]" desc="[[body.desc]]"></vc-body>
-          </template>
-        </div>
+      <vc-header lbl="[[header.lbl]]" desc="[[header.desc]]" params="[[vcheaderparams]]">
+        <vc-body-list datas="[[participation]]" responsivewidthparam="[[vcbodylistresponsivewidth]]" params="[[vcbodylistparams]]" widthdelta="[[getVcBodyListWidthDelta()]]" narrow="[[narrow]]"></vc-body-list>
       </vc-header>
     </template>
-
-    <vc-query largescreen="{{largescreen}}"></vc-query>
 
   </template>
 
@@ -91,12 +91,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         places: {
           type: Array
         },
-        params: {
+        participation: {
           type: Array
         },
-        largescreen: {
-          type: Boolean,
-          observer: '_largeScreenChanged'
+        bodyresponsivewidthparam: {
+          type: String,
+          notify: true,
+          value: '720px'
+        },
+        vcbodylistresponsivewidth: {
+          type: String,
+          value: "560px"
+        },
+        vccardsimpleparams: {
+          type: Array
+        },
+        vcbodylistparams: {
+          type: Array
+        },
+        vcbodyparams: {
+          type: Array
+        },
+        vcheaderparams: {
+          type: Array
+        },
+        narrow: {
+          type: Boolean
         }
       },
 
@@ -114,14 +134,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
       },
 
-      _largeScreenChanged: function (newValue) {
+      getVcBodyListWidthDelta: function () {
         var that = this;
-        if (that.params) {
-          for (let param of that.params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+        var smallDelta = 0;
+        var largeDelta = 0;
+        var smallValueNumber = 0;
+        var largeValueNumber = 0;
+
+        for (let param of that.vcheaderparams) {
+          smallValueNumber = Number(param.smallvalue.replace('px', ''));
+          largeValueNumber = Number(param.largevalue.replace('px', ''));
+          if (param.name == '--vc-header-main-div-padding') {
+            smallDelta = smallDelta + 2 * smallValueNumber;
+            largeDelta = largeDelta + 2 * largeValueNumber;
           }
-          that.updateStyles();
+          else {
+            smallDelta = smallDelta + smallValueNumber;
+            largeDelta = largeDelta + largeValueNumber;
+          }
         }
+        return [smallDelta,largeDelta];
       },
 
       windowResize: function () {
@@ -130,7 +162,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       attached: function () {
         var that = this;
-        that._largeScreenChanged(that.largescreen);
       },
 
       ready: function () {
@@ -200,45 +231,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               { link: { href: "http://www.labellucie.com", txt: "www.labellucie.com" } },
               { txt: ")" }
             ]
-          },
+          }
+        ];
+        that.participation = [
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:handshake", desc: [
+            lbl: "", icon: "vc-icons2:handshake", desc: [
               { txt: "En devenant associé (jusqu'à 30% des capitaux sont ouverts à investissement)." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:groupstroke", desc: [
+            lbl: "", icon: "vc-icons2:groupstroke", desc: [
               { txt: "Si vous êtes un club, une association ou un professionnel du Bien-Être, des Médecines Douces ou du Développement Personnel, en pré-réservant ou en nous faisant part de votre volonté de réserver pour vos futurs stages/séminaires 2016. C'est sans aucun engagement. Ces pré-réservations nous serviront à faciliter les discussions avec les investisseurs et organismes prêteurs." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:chat", desc: [
+            lbl: "", icon: "vc-icons2:chat", desc: [
               { txt: "Si vous êtes un pratiquant, en parlant autour de vous, avec vos formateur, enseignant, amis. Les chalets seront ouverts à des locations à la semaine hors stages. Vous pouvez donc aussi nous faire part de votre intérêt/volonté de venir passer quelques jours de repos et de sérénité au domaine." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:coin-piles", desc: [
+            lbl: "", icon: "vc-icons2:coin-piles", desc: [
               { txt: "En participant à notre campagne de crowdfunding. Très prochainement, nous allons lancer, auprès de deux grands acteurs du financement participatif, deux opérations d'appels de fonds (dons avec contrepartie, prêts)." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:wrench", desc: [
+            lbl: "", icon: "vc-icons2:wrench", desc: [
               { txt: "En nous apportant une aide technique (expertise comptable, avocat, paysagiste, architecte, mécénat, contacts avec autorités locales...). Bien sûr, ce coup de main donnera lieu à contrepartie." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons:spastroke", desc: [
+            lbl: "", icon: "vc-icons:spastroke", desc: [
               { txt: "En nous faisant part de votre volonté de nous rejoindre une fois le domaine ouvert. En effet, nous recherchons déjà la future équipe qui gérera le domaine." }
             ]
           },
           {
-            type: this.types[3].lbl, lbl: "", icon: "vc-icons2:facebook-square-stroke", desc: [
+            lbl: "", icon: "vc-icons2:facebook-square-stroke", desc: [
               { txt: "Ou tout simplement en nous rejoignant sur " },
               { link: { href: "https://www.facebook.com/VedaCampus", txt: "notre page Facebook" } },
               { txt: " !" }
-
             ]
-          },
+          }
         ];
         that.places = [
           { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", top: "67.89%", left: "84.2%", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
@@ -252,70 +284,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons3:spastroke", top: "65.93%", left: "62.5%", desc: "Spa time" },
           { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", top: "39.16%", left: "28.65%", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
         ];
-        that.params = [
-          { name: '--vc-card-simple-margin', largeValue: '0em', smallValue: '0em' },
-          { name: '--vc-card-simple-padding', largeValue: '0em', smallValue: '0em' },
-          { name: '--vc-card-simple-padding-right', largeValue: '0em', smallValue: '0em' }
+        that.vccardsimpleparams = [
+          { name: '--vc-card-simple-margin', largevalue: '0em', smallvalue: '0em' },
+          { name: '--vc-card-simple-padding', largevalue: '0em', smallvalue: '0em' },
+          { name: '--vc-card-simple-padding-right', largevalue: '0em', smallvalue: '0em' },
         ];
+        that.vcbodylistparams = [
+          { name: '--vc-body-list-margin-left', largevalue: '-32px', smallvalue: '' },
+          { name: '--vc-body-list-iron-icon-size', largevalue: '64px', smallvalue: '32px' },
+          { name: '--vc-body-list-max-width', largevalue: '352px', smallvalue: '100%' }
+          /*{ name: '--vc-body-margin-left', largevalue: '32px', smallvalue: '' }*/
+        ];
+        that.vcbodyparams = [
+          { name: '--vc-body-image-width', largevalue: '', smallvalue: '100%' },
+          { name: '--vc-body-image-max-width', largevalue: '256px', smallvalue: '336px' }
+        ];
+        that.vcheaderparams = [
+          { name: '--vc-header-margin-right', largevalue: '32px', smallvalue: '16px' },
+          { name: '--vc-header-main-div-padding', largevalue: '64px', smallvalue: '16px' },
+          { name: '--vc-header-main-div-margin-left', largevalue: '32px', smallvalue: '16px' }
+        ];
+        that.updateStyles();
       }
 
     });
-
-
-
-/* AVAILABLE ON 2.0 */
-   /* class vchome extends Polymer.Element {
-
-      static get is() { return 'vc-home'; }
-
-      static get properties() {
-        return {
-          places: {
-            type: Array,
-            value() {
-              return [
-                { src: this.resolveUrl("../images/home_map_00"), icon: "vc-icons:institution", top: "520", left: "970", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des huitres en fixant un sapin." },
-                { src: this.resolveUrl("../images/home_map_01"), icon: "vc-icons:spa", top: "630", left: "20", desc: "Ce coin détente vous est réservé. Vous pouvez y dormir, ne rien y faire, boire un... deux... 20 coups ou réfléchir au sens de la vie des yaourts suédois en fixant un caillou." },
-                { src: this.resolveUrl("../images/home_map_02"), icon: "vc-icons:spa", top: "350", left: "20", desc: "Le bois des bambous" },
-                { src: this.resolveUrl("../images/home_map_03"), icon: "vc-icons:home2", top: "300", left: "650", desc: "Les chalets asiatiques où qu'on peut manger des nems. C'est bon les nems." },
-                { src: this.resolveUrl("../images/home_map_04"), icon: "vc-icons:group", top: "460", left: "450", desc: "La yourte dojo. (sans les poules)... Mais bon, je préfèrais quand même avec les poules, ça faisait plus roots. Et c'était plus net parce que là, autant j'ai bien refait les chalets en virant la montagne enneigée, autant là c'est dégueulasse ! Ceci dit, ça fait un gros texte de test qui en plus cache la misère. ^^" },
-                { src: this.resolveUrl("../images/home_map_05"), icon: "vc-icons:group", top: "160", left: "620", desc: "Le dojo du ciel" },
-                { src: this.resolveUrl("../images/home_map_06"), icon: "vc-icons:spa", top: "180", left: "40", desc: "Les ruches du domaine" },
-                { src: this.resolveUrl("../images/home_map_07"), icon: "vc-icons:home2", top: "300", left: "1000", desc: "Stone tipi" },
-                { src: this.resolveUrl("../images/home_map_08"), icon: "vc-icons:spa", top: "505", left: "720", desc: "Spa time" },
-                { src: this.resolveUrl("../images/home_map_09"), icon: "vc-icons:group", top: "300", left: "330", desc: "Espace danse, fête de la musique, folklore ouzbèque, concours de pétanque, etc.." },
-              ]
-            }
-          },
-          headers: {
-            type: Array,
-            value() {
-              return [
-                { type: "desc", lbl: "Présentation du projet", desc: "Le projet Veda Campus consiste en la création d’un centre permettant d’accueillir des groupes pratiquant des disciplines en rapport avec le Bien-Être, les Médecines Douces et le Développement Personnel dans des conditions optimales." },
-                { type: "domain", lbl: "Le domaine Veda Campus", desc: "Situé en pleine nature, le domaine s’étendra sur 25 hectares. Le bâtiment principal servira d’accueil, de boutique et de lieu d’exposition permanente. Des chalets en bois, regroupés en îlots autour du dojo, permettront à nos hôtes de pratiquer ou de suivre leur stage en toute quiétude. Chaque îlot sera isolé en pleine nature et possédera son propre style." }
-              ]
-            }
-          }
-        }
-      }
-
-      computeFilter(string) {
-        if (!string) {
-          // set filter to null to disable filtering
-          return null;
-        } else {
-          // return a filter function for the current search string
-          string = string.toLowerCase();
-          return function (header) {
-            var first = header.firstname.toLowerCase();
-            var last = header.lastname.toLowerCase();
-            return (first.indexOf(string) != -1 ||
-              last.indexOf(string) != -1);
-          };
-        }
-      }
-    }
-
-    customElements.define(vchome.is, vchome);*/
   </script>
 </dom-module>

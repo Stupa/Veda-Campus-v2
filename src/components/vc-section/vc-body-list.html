@@ -1,0 +1,280 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../vc-section/vc-body.html">
+<link rel="import" href="../vc-query/vc-query.html">
+
+<dom-module id="vc-body-list">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-alignment">
+       :host {
+        display: block;
+        --vc-body-max-width: var(--vc-body-list-max-width);
+        --vc-body-p-color: var(--vc-body-list-p-color);
+        --vc-body-h-color: var(--vc-body-list-h-color);
+        --vc-body-a-color: var(--vc-body-list-a-color);
+      }
+      
+      .container {
+        height: 100%;
+      }
+      
+      .negativeMarginLeft {
+        margin-left: var(--vc-body-list-margin-left);
+      }
+    </style>
+
+    <div class="horizontal layout wrap container negativeMarginLeft">
+      <template is="dom-repeat" items="[[datas]]" as="data">
+        <vc-body class="flex m-b-1" icon="[[data.icon]]" src="[[data.src]]" lbl="[[data.lbl]]" desc="[[data.desc]]" params="[[vcbodyparams]]"
+          widthdelta="[[widthdelta]]" narrow="[[narrow]]" scrollbar></vc-body>
+      </template>
+      <template is="dom-repeat" items="{{paramslist}}" as="params">
+        <vc-body class$="[[params.id]]" params="[[vcbodyparams]]" widthdelta="[[widthdelta]]" narrow="[[narrow]]" scrollbar></vc-body>
+      </template>
+    </div>
+
+    <template is="dom-repeat" items="{{paramslist}}" as="params">
+      <vc-query responsivewidthparam="[[params.responsivewith]]" largescreen="{{params.largescreen}}" narrow="[[narrow]]"></vc-query>
+    </template>
+
+    <vc-query responsivewidthparam="[[responsivewidthparam]]" largescreen="{{largescreen}}" narrow="[[narrow]]"></vc-query>
+
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'vc-body-list',
+      properties: {
+        datas: {
+          type: Array
+        },
+        params: {
+          type: Array,
+          observer: '_paramsChanged'
+        },
+        paramslist: {
+          type: Array,
+        },
+        vcbodyparams: {
+          type: Array
+        },
+        vcbodylistparams: {
+          type: Array
+        },
+        vcbodyiconparams: {
+          type: Array
+        },
+        largescreen: {
+          type: Boolean,
+          observer: '_largescreenChanged'
+        },
+        responsivewidthparam: {
+          type: String,
+        },
+        widthdelta: {
+          type: Number
+        },
+        narrow: {
+          type: Boolean
+        }
+      },
+
+      observers: [
+        '_largescreenChangedFakeBodies(paramslist.*)'
+      ],
+
+
+      _paramsChanged: function (newValue, oldValue) {
+        var that = this;
+        var vcBodyListCheckParams = [];
+        var vcBodyCheckParams = [];
+        var newParam = {};
+
+        if (newValue) {
+          for (let param of newValue) {
+            newParam = { name: param.name };
+            vcBodyCheckParams.push(newParam);
+          }
+          newParam = { name: '--vc-body-list-margin-left' };
+          vcBodyListCheckParams.push(newParam);
+          that.vcbodyparams = that.setParams(vcBodyCheckParams, 'vc-body', true);
+          that.vcbodylistparams = that.setParams(vcBodyListCheckParams, '', false);
+          that._largescreenChanged(that.largescreen);
+
+        }
+      },
+
+      getScrollbarWidth: function () {
+        var outer = document.createElement("div");
+        outer.style.visibility = "hidden";
+        outer.style.width = "100px";
+        outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+        document.body.appendChild(outer);
+
+        var widthNoScroll = outer.offsetWidth;
+        // force scrollbars
+        outer.style.overflow = "scroll";
+
+        // add innerdiv
+        var inner = document.createElement("div");
+        inner.style.width = "100%";
+        outer.appendChild(inner);
+
+        var widthWithScroll = inner.offsetWidth;
+
+        // remove divs
+        outer.parentNode.removeChild(outer);
+
+        return widthNoScroll - widthWithScroll;
+      },
+
+      _paramsChanged2: function () {
+        var that = this;
+        var largeValueParam = '';
+        var responsiveWidth = 0;
+        var smallValue = '';
+        var largeValue = '';
+        var largeValueNumber = 0;
+        var paramsList = [];
+        var tempParams = [];
+        var tempParam = {};
+        var icon;
+        var marginleft;
+        var i = 1;
+        var j = 0;
+        var responsiveWidthParam = 0;
+        var minwidth;
+        var scrollbarWidth = that.getScrollbarWidth();
+
+        if (that.params) {
+          for (let param of that.params) {
+            if (param.name == '--vc-body-list-max-width') {
+              largeValueParam = Number(param.largevalue.replace("px", ''));
+            }
+            if (param.name == '--vc-body-list-margin-left') {
+              marginLeftParam = [-Number(param.smallvalue.replace("px", '')), -Number(param.largevalue.replace("px", ''))];
+            }
+          }
+
+          responsiveWidthParam = Number(that.getComputedStyleValue('--vc-body-list-max-width').replace("px", ''));
+
+          while (responsiveWidth < responsiveWidthParam) {
+            if (i > 1) {
+              responsiveWidth = i * (marginLeftParam[1] + largeValueParam) + that.widthdelta[1] - marginLeftParam[1];
+              if (that.scrollbar) {
+                responsiveWidth = responsiveWidth + scrollbarWidth;
+              }
+              smallValue = largeValue;
+              largeValueNumber = (largeValueParam + marginLeftParam[1]) * (i + 1) / i;
+
+
+              largeValue = largeValueNumber + "px";
+              j = i - 2;
+              paramsList[j] = { id: "hiddenvcbody" + j + " flex", responsivewith: responsiveWidth + 'px', params: [{ name: '--vc-body-list-vc-body-height', largevalue: "2px", smallvalue: "0" }] };
+            }
+            i++;
+          }
+          paramsList.pop();
+
+          if (paramsList.length > 0) {
+            that.paramslist = paramsList;
+          }
+        }
+      },
+
+      setParams: function (checkParams, renameParam, invertMargin) {
+        var that = this;
+        var largeValue = '';
+        var newName = '';
+        var newParam = {};
+        var newParams = [];
+        if (that.params) {
+          for (let param of that.params) {
+            for (let checkParam of checkParams) {
+              if (param.name == checkParam.name) {
+                if (renameParam) {
+                  newName = param.name.replace('vc-body-list', renameParam);
+                }
+                else {
+                  newName = param.name;
+                }
+                if (invertMargin) {
+                  if (param.name == '--vc-body-list-margin-left') {
+                    largeValueNumber = -Number(param.largevalue.replace("px", ''));
+                    largeValue = largeValueNumber + 'px';
+                  }
+                  else {
+                    largeValue = param.largevalue;
+                  }
+                }
+                else {
+                  largeValue = param.largevalue;
+                }
+                newParam = { name: newName, largevalue: largeValue, smallvalue: param.smallvalue };
+                newParams.push(newParam);
+              }
+            }
+          }
+        }
+        return newParams;
+      },
+
+      _largescreenChanged: function (newValue) {
+        var that = this;
+        if (that.vcbodylistparams) {
+          for (let param of that.vcbodylistparams) {
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
+          }
+          that.updateStyles();
+        }
+      },
+
+      _largescreenChangedFakeBodies: function (newValue) {
+        var that = this;
+        var value = this.get(newValue.path);
+        var index = newValue.path.split(".")[1];
+        var i = 0;
+        var items;
+
+        if (that.paramslist) {
+          if ((index)) {
+            index = Number(index.replace('#', ''));
+            items = that.paramslist[index].params;
+            for (let item of items) {
+              this.$$('.' + that.paramslist[index].id.split(' ')[0]).style.height = value ? item.smallvalue : item.largevalue;
+            }
+          }
+          that.updateStyles();
+        }
+      },
+
+      attached: function () {
+        var that = this;
+        that._paramsChanged2();
+      },
+
+      windowResize: function () {
+        var that = this;
+      },
+
+      ready: function () {
+        var that = this;
+        if (document.readyState != 'loading') {
+          /*this.domReady();*/
+        } else {
+          window.addEventListener('DOMContentLoaded', function () { that.domReady(); });
+        }
+        window.addEventListener("resize", function () { that.windowResize(); });
+        if (that.width == "") {
+          that.width.width = "0px";
+        }
+        that.windowResize();
+        that.updateStyles();
+      }
+
+    });
+  </script>
+</dom-module>

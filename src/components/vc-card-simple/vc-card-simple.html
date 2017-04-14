@@ -44,8 +44,8 @@
       </div>
     </div>
 
-    <vc-query largescreen="{{largescreen}}"></vc-query>
-    <vc-query responsivewidthparam='--vc-card-simple-responsive-width' largescreen="{{largescreensmaller}}"></vc-query>
+    <vc-query responsivewidthparam="[[responsivewidth]]" largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam="[[smallerresponsivewidth]]" largescreen="{{largescreensmaller}}"></vc-query>
 
   </template>
 
@@ -55,11 +55,11 @@
       properties: {
         params: {
           type: Array,
-          observer: '_setInitParams'
+          observer: '_paramsChanged'
         },
         paramssmaller: {
           type: Array,
-          observer: '_setInitParams'
+          observer: '_paramssmallerChanged'
         },
         largescreen: {
           type: Boolean,
@@ -69,6 +69,12 @@
           type: Boolean,
           observer: '_largescreensmallerChanged'
         },
+        responsivewidth: {
+          type: String
+        },
+        smallerresponsivewidth: {
+          type: String
+        }
       },
 
       windowResize: function () {
@@ -94,6 +100,19 @@
         throw new Error('Bad Hex');
       },
 
+
+      _paramsChanged: function (newValue) {
+        var that = this;
+        that._largescreenChanged(that.largescreen);
+      },
+
+
+      _paramssmallerChanged: function (newValue) {
+        var that = this;
+        that._largescreensmallerChanged(that.largescreensmaller);
+      },
+
+
       _largescreensmallerChanged: function (newValue) {
         var that = this;
         that._largeScreenChangedParams(newValue, that.paramssmaller);
@@ -109,9 +128,10 @@
 
       _largeScreenChangedParams: function (newValue, params) {
         var that = this;
+
         if (params) {
           for (let param of params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
           }
           that.updateStyles();
         }
@@ -124,11 +144,15 @@
         if (color) {
           that.customStyle['--vc-card-simple-background-color-rgba'] = that.hexToRgbA(color);
         }
+        that.responsivewidth = that.getComputedStyleValue('--vc-card-simple-responsive-width');
+        that.smallerresponsivewidth = that.getComputedStyleValue('--vc-card-simple-smaller-responsive-width');
+        that._setInitParams();
         that.updateStyles();
       },
 
       _setInitParams: function () {
         var that = this;
+
         if (that.paramssmaller && that.params) {
           if (that.largescreensmaller) {
             that._largeScreenChangedParams(that.largescreensmaller, that.paramssmaller);

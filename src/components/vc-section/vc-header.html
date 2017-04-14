@@ -9,9 +9,8 @@
   <style include="shared-styles iron-flex iron-flex-alignment" is="custom-style">
      :host {
       display: block;
-      --vc-header-max-width: 1344px;
       max-width: var(--vc-header-max-width);
-      --vc-header-responsive-width: 720px;
+      /*--vc-header-responsive-width: 720px;*/
       --vc-desc-p-color: var(--vc-header-p-color);
       --vc-desc-a-color: var(--vc-header-a-color);
     }
@@ -22,6 +21,11 @@
     
     .vcheadermarginright {
       margin-right: var(--vc-header-margin-right, '');
+    }
+    
+    .mainDivClass {
+      padding: var(--vc-header-main-div-padding, '');
+      margin-left: var(--vc-header-main-div-margin-left, '');
     }
     
     .titleText {
@@ -39,7 +43,7 @@
       </div>
     </div>
 
-    <div id="mainDiv" class$="{{mainDivClass}}">
+    <div id="mainDiv" class="layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright mainDivClass">
       <div class="bottomdiv">
         <template is="dom-if" if="[[lbl]]">
           <div>
@@ -56,7 +60,7 @@
       </content>
     </div>
 
-    <vc-query responsivewidthparam='--vc-header-responsive-width' largescreen="{{largescreen}}"></vc-query>
+    <vc-query responsivewidthparam="[[responsivewidthparam]]" largescreen="{{largescreen}}"></vc-query>
 
 
   </template>
@@ -79,6 +83,10 @@
           type: Boolean,
           observer: '_setInitMarginBottom'
         },
+        responsivewidthparam: {
+          type: String,
+          value: '719px'
+        },
         params: {
           type: Array,
           observer: '_setInitParams'
@@ -97,10 +105,10 @@
         var marginMain = "";
         if (that.params) {
           for (let param of that.params) {
-            that.customStyle[param.name] = newValue ? param.smallValue : param.largeValue;
+            that.customStyle[param.name] = newValue ? param.smallvalue : param.largevalue;
           }
-          marginMain = newValue ? "p-1 m-l-1" : "m-l-2 p-4";
-          that.mainDivClass = "layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright" + " " + marginMain;
+          /*marginMain = newValue ? "p-1 m-l-1" : "m-l-2 p-4";
+          that.mainDivClass = "layout vertical start-justified whiteToolbarBody m-0 vcheadermarginright" + " " + marginMain;*/
           that.updateStyles();
         }
       },
@@ -143,9 +151,6 @@
           that.width.width = "0px";
         }
         that.windowResize();
-        that.params = [
-          { name: '--vc-header-margin-right', largeValue: '2em', smallValue: '1em' },
-        ];
       },
 
     });

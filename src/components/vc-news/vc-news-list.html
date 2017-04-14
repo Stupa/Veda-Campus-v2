@@ -17,10 +17,10 @@
 
     <div id="news" class="transparentToolbar horizontal layout left-justified containerPercent">
       <template is="dom-repeat" items="[[dataread]]" as="data">
-          <vc-news-header>
-              <vc-news-body src="[[data.src]]" lbl="[[data.lbl]]" desc="[[data.desc]]"></vc-news-body>
-          </vc-news-header>
-      </template>      
+        <vc-news-header responsivewidthparam="[[responsivewidthparam]]" narrow="[[narrow]]" params="[[vcnewsheaderparams]]">
+          <vc-news-body src="[[data.src]]" lbl="[[data.lbl]]" desc="[[data.desc]]"></vc-news-body>
+        </vc-news-header>
+      </template>
     </div>
 
   </template>
@@ -35,6 +35,23 @@
         width: {
           type: Number,
           observer: "_widthChanged"
+        },
+        responsivewidthparam: {
+          type: String
+        },
+        params: {
+          type: Array,
+          observer: '_paramsChanged'
+        },
+        vcnewsheaderparams: {
+          type: Array
+        },
+        /*largescreen: {
+          type: Boolean,
+          observer: '_largeScreenChanged'
+        },*/
+        narrow: {
+          type: Boolean
         }
       },
 
@@ -55,12 +72,30 @@
           if (body.type == type) return true;
           if (body.type != type) return false;
         };
+      },
+
+      setParams: function (switchstring) {
+        var that = this;
+        var newName = '';
+        var newParam = {};
+        var newParams = [];
+        if (that.params) {
+          for (let param of that.params) {
+            newName = param.name.replace('vc-news-list', switchstring);
+            newParam = { name: newName, largevalue: param.largevalue, smallvalue: param.smallvalue };
+            newParams.push(newParam);
+          }
+        }
+        return newParams;
+      },
+
+      _paramsChanged: function (newValue) {
+        var that = this;
+        if (newValue) {
+          that.vcnewsheaderparams = that.setParams('vc-news-header');
+        }
       }
 
     });
-  
   </script>
 </dom-module>
-
-
-

@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="vc-icons.html">
+<link rel="import" href="components/vc-icons/vc-icons.html">
 <link rel="import" href="styles/shared-styles.html">
 <link rel="import" href="components/vc-menu-item/vc-menu-item-button.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
@@ -51,6 +51,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       iron-icon {
         position: absolute;
         top: 0.5em;
+      }
+      
+      paper-icon-button {
+        color: var(--primary-color-dark);
       }
       
       .left iron-icon {
@@ -103,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-header-layout id="pages" has-scrolling-region>
 
         <!--<app-header condenses reveals effects="waterfall" class="transparentToolbar">-->
-        <app-header class="transparentToolbar">
+        <app-header id="header" class="transparentToolbar">
 
 
           <app-toolbar class="transparentToolbar">
@@ -115,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-          <vc-home name="home"></vc-home>
+          <vc-home name="home" narrow="[[narrow]]"></vc-home>
           <vc-news name="news" pagewidth="[[pagewidth]]" narrow="[[narrow]]"></vc-news>
           <vc-staff name="staff"></vc-staff>
           <vc-contact name="contact"></vc-contact>
@@ -149,7 +153,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           notify: true,
           reflectToAttribute: true,
-          value: false
+          value: false,
+          observer: '_narrowChanged'
+        },
+        vcappdrawerclass: {
+          type: String,
         }
       },
 
@@ -157,8 +165,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routePageChanged(routeData.page)',
       ],
 
+      _narrowChanged: function () {
+
+
+
+
+        this.$.drawer.$.contentContainer.style.backgroundColor = this.narrow ? this.getComputedStyleValue('--secondary-color-dark') : "transparent";
+      },
+
       _routePageChanged: function (page) {
         this.page = page || 'home';
+
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
@@ -178,6 +195,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var that = this;
         that.pagewidth = Number(window.getComputedStyle(that.$.pages, null).getPropertyValue('width').replace('px', ''));
         that.narrow = that.$.appdrawerlayout.narrow;
+        /*
+        Impossible à récupérer à l'init.... Mis à 160 sur variable css
+        console.log(this.$.pages.$.contentContainer.style.paddingTop);
+        console.log(that.$.header.getScrollState());*/
       },
 
       attached: function () {

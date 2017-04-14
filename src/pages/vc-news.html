@@ -7,6 +7,8 @@
   <style is="custom-style">
      :host {
       display: block;
+      --vc-news-responsive-width: 416px;
+      --vc-news-main-responsive-width: var(--vc-news-responsive-width);
       --vc-news-body-p-color: var(--color-neutral-text-dark);
       --vc-news-body-a-color: var(--primary-color-dark);
     }
@@ -16,7 +18,7 @@
 
     <firebase-query app-name="vc" path="/[[table]]" data="{{dataread}}"></firebase-query>
 
-    <vc-news-main dataread="[[dataread]]" pagewidth="[[pagewidth]]" narrow="[[narrow]]"></vc-news-main>
+    <vc-news-main dataread="[[dataread]]" pagewidth="[[pagewidth]]" params="[[vcnewsmainparams]]" narrow="[[narrow]]"></vc-news-main>
 
   </template>
 
@@ -34,10 +36,22 @@
         pagewidth: {
           type: Number
         },
+        vcnewsmainparams: {
+          type: Array
+        },
         narrow: {
           type: Boolean
         }
-      }
+      },
+
+      ready: function () {
+        var that = this;
+
+        that.vcnewsmainparams = [
+          { name: '--vc-news-main-min-width', largevalue: '352px', smallvalue: '100%' },
+          { name: '--vc-news-main-margin-left', largevalue: '32px', smallvalue: '0' }
+        ];
+      },
 
     });
   </script>

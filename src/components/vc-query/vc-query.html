@@ -1,3 +1,4 @@
+<script src="../../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/iron-media-query/iron-media-query.html">
 
@@ -11,42 +12,61 @@
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'vc-query',
-    properties: {
-      largescreen: {
-        type: Boolean,
-        notify: true
+  HTMLImports.whenReady(function () {
+    Polymer({
+      is: 'vc-query',
+      properties: {
+        largescreen: {
+          type: Boolean,
+          notify: true,
+          observer: "_largescreenChanged"
+        },
+        responsivewidth: {
+          type: String
+        },
+        responsivewidthparam: {
+          type: String,
+          observer: "_switchNarrow"
+          /*value: '--vc-app-drawer-layout-responsive-width'*/
+        },
+        narrow: {
+          type: Boolean,
+          observer: "_switchNarrow"
+        }
       },
-      responsivewidth: {
-        type: String
+
+
+      _largescreenChanged: function (newValue, oldValue) {
+        var that = this;
+        if ((oldValue != undefined) && (newValue == undefined)) {
+          that.largescreen = oldValue;
+        }
       },
-      responsivewidthparam: {
-        type: String,
-        value: '--vc-app-drawer-layout-responsive-width'
+
+      _switchNarrow: function () {
+        var that = this;
+        var w = 0;
+
+        /*w = Number(that.getComputedStyleValue(that.responsivewidthparam).replace('px', ''));*/
+        if (that.responsivewidthparam) {
+          w = Number(that.responsivewidthparam.replace('px', ''));
+
+          if (!that.narrow) {
+            w = w + Number(that.getComputedStyleValue('--vc-app-drawer-width').replace('px', ''));
+          }
+        }
+        else {
+          w = 0;
+        }
+        that.responsivewidth = "(max-width: " + w + "px)"
       },
-      narrow: {
-        type: Boolean,
-        observer: "_switchNarrow"
+
+      ready: function () {
+        var that = this;
+        that._switchNarrow();
       }
-    },
 
-
-    _switchNarrow: function () {
-      var that = this;
-      var w = 0;
-      w = Number(that.getComputedStyleValue(that.responsivewidthparam).replace('px', ''));
-      if (!that.narrow) {
-        w = w + Number(that.getComputedStyleValue('--vc-app-drawer-width').replace('px', ''));
-      }
-      that.responsivewidth = "(max-width: " + w + "px)"
-    },
-
-    ready: function () {
-      var that = this;
-      that._switchNarrow();
-    }
-
+    });
   });
 
 </script>
