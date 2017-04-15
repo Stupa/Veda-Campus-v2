@@ -2,9 +2,10 @@
   "entrypoint": "index.html",
   "shell": "src/vc-app.html",
   "fragments": [
-    "src/pages/vc-view1.html",
-    "src/pages/vc-view2.html",
-    "src/pages/vc-view3.html",
+    "src/pages/vc-home.html",
+    "src/pages/vc-news.html",
+    "src/pages/vc-staff.html",
+    "src/pages/vc-contact.html",
     "src/pages/vc-view404.html"
   ],
   "sourceGlobs": [
